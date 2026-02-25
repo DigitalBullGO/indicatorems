@@ -41,11 +41,17 @@
     --gray: 210 7% 46%;
     --gray-foreground: 0 0% 100%;
 
+    --teal: 174 72% 40%;
+    --teal-foreground: 0 0% 100%;
+
+    --purple: 270 50% 55%;
+    --purple-foreground: 0 0% 100%;
+
     --border: 0 0% 90%;
     --input: 0 0% 90%;
     --ring: 153 99% 31%;
 
-    --radius: 0.625rem;
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 3%;
     --sidebar-foreground: 0 0% 85%;
@@ -60,7 +66,7 @@
     --chart-2: 232 48% 48%;
     --chart-3: 45 100% 50%;
     --chart-4: 353 33% 58%;
-    --chart-5: 210 7% 46%;
+    --chart-5: 174 72% 40%;
   }
 
   .dark {
@@ -101,6 +107,12 @@
     --gray: 210 7% 56%;
     --gray-foreground: 0 0% 100%;
 
+    --teal: 174 72% 50%;
+    --teal-foreground: 0 0% 100%;
+
+    --purple: 270 50% 65%;
+    --purple-foreground: 0 0% 100%;
+
     --border: 0 0% 18%;
     --input: 0 0% 18%;
     --ring: 153 99% 35%;
@@ -134,6 +146,21 @@
   .gradient-card {
     background: linear-gradient(180deg, hsl(0 0% 100%), hsl(150 10% 97%));
   }
+  .gradient-card-warm {
+    background: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(153 40% 97%) 100%);
+  }
+  .gradient-card-indigo {
+    background: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(232 40% 97%) 100%);
+  }
+  .gradient-card-amber {
+    background: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(45 60% 97%) 100%);
+  }
+  .gradient-card-rose {
+    background: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(353 30% 97%) 100%);
+  }
+  .gradient-card-teal {
+    background: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(174 40% 96%) 100%);
+  }
   .text-gradient {
     background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-hover)));
     -webkit-background-clip: text;
@@ -141,13 +168,30 @@
   }
 }
 
-/* Micro-interaction utilities */
+/* Premium card styles */
 .card-hover {
   @apply transition-all duration-300 ease-out;
 }
 .card-hover:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px -8px hsl(var(--primary) / 0.15), 0 4px 10px -4px hsl(0 0% 0% / 0.06);
+}
+
+.card-premium {
+  @apply transition-all duration-300 ease-out;
+  box-shadow: 0 1px 3px hsl(0 0% 0% / 0.04), 0 4px 12px hsl(0 0% 0% / 0.03);
+}
+.card-premium:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px -8px hsl(var(--primary) / 0.18), 0 6px 16px -6px hsl(0 0% 0% / 0.08);
+}
+
+/* Elegant table striping */
+.table-striped tbody tr:nth-child(even) {
+  background-color: hsl(210 7% 97%);
+}
+.table-striped tbody tr:hover {
+  background-color: hsl(153 40% 96%) !important;
 }
 
 .btn-glow {
@@ -177,4 +221,12 @@
 @keyframes badge-ping {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.7; transform: scale(1.05); }
+}
+
+/* Chart tooltip styling */
+.recharts-tooltip-wrapper .recharts-default-tooltip {
+  border-radius: 10px !important;
+  border: none !important;
+  box-shadow: 0 8px 24px -4px hsl(0 0% 0% / 0.12), 0 2px 8px hsl(0 0% 0% / 0.06) !important;
+  padding: 10px 14px !important;
 }
