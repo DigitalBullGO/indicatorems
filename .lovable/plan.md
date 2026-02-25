@@ -1,52 +1,88 @@
 
 
-## Plan: Update Pre-Engineered Report Previews to Match Report Content
+## Plan: AI Bridge for SAP — 4-Step Stepper Wizard Implementation
 
-### Problem
-The 12 report previews in `src/pages/Reports.tsx` all show simple generic bar/pie charts with placeholder data. They don't reflect the actual content, structure, or KPIs that each report title implies. For example, "Commodity-wise Spend Analysis" should show spend breakdowns by type, top categories, and AI-identified opportunities — as demonstrated in the uploaded PDF template.
+### Overview
 
-### Solution
-Replace the current simple chart previews with rich, executive-style preview panels that include:
-- **KPI summary cards** at the top (e.g., Total Spend, Supplier Count, Savings Identified)
-- **Data tables** with contextual columns matching the report topic
-- **A relevant chart** (pie, bar, or horizontal bar) where appropriate
-- **Actionable insights** or alerts section
+Complete rewrite of `src/pages/SapBridge.tsx` as a 4-step stepper wizard with enriched mock data derived from the uploaded SAP S/4HANA Purchase Order export.
 
-### Report-by-Report Content Updates
+---
 
-| Report ID | Title | Preview Content |
-|-----------|-------|----------------|
-| `spend-analysis` | Commodity-wise Spend Analysis | KPIs: Total Spend $142.5M, 1,420 Suppliers, 73% Direct. Table: Spend by Type (Direct Materials, Mfg Opex, Indirect). Pie chart by commodity. AI alerts (Maverick Spend, Consolidation). |
-| `bom-breakdown` | BOM & Component-Level Breakdown | KPIs: Total BOM Cost, Unique MPNs, Avg Lead Time. Table: Top components by cost contribution. Horizontal bar by commodity %. |
-| `supplier-scorecard` | Supplier Scorecard | KPIs: Avg OTD, Avg Quality, Suppliers Evaluated. Table: Supplier name, OTD%, Quality%, Lead Time, Rating. Grouped bar (OTD vs Quality). |
-| `lead-time-120` | MPNs Exceeding 120-Day Lead Time | KPIs: Parts >120d, Longest Lead Time, Avg Excess Days. Table: MPN, Description, Supplier, Lead Time, Risk Level. Bar chart by part. |
-| `inventory` | Inventory Status Report | KPIs: Total Units, Total Value, Low Stock Items. Table: Commodity, Units, Value, Turnover Rate. Bar chart by commodity value. |
-| `grn-pos` | GRN & PO Tracking | KPIs: Total POs, Received, Pending. Table: Month, Received, Pending, Variance. Stacked bar by month. |
-| `quality-yield` | Quality Yield Report | KPIs: Avg Yield, Best Line, Lines Below Target. Table: Line, Yield%, Defect Rate, Status. Bar chart by line. |
-| `aging-customer` | Aging Analysis — Customer | KPIs: Total Outstanding, >90d Amount, Collection Rate. Table: Aging bucket, Count, Amount, % of Total. Bar by aging bucket. |
-| `aging-supplier` | Aging Analysis — Supplier | KPIs: Total Payables, Overdue Amount, On-Time Payment %. Table: Aging bucket, Count, Amount. Bar by bucket. |
-| `customer-sales` | Customer-wise Sales | KPIs: Total Revenue, Top Region, Active Customers. Table: Region, Revenue, Orders, Avg Order Value. Bar by region. |
-| `org-drilldown` | Org/Dept/BOM-wise Drilldown | KPIs: Departments, Total Spend, Largest Dept. Table: Department, Budget, Actual, Variance. Horizontal bar. |
-| `iqc-report` | IQC Inspection Report | KPIs: Total Lots, Pass Rate, Rejections. Table: Line, Pass Rate%, Lots Inspected, Defects Found. Bar chart. |
+### Step 1: Authenticate & Establish Bridge
 
-### Implementation Approach
+- Horizontal stepper bar at the top: numbered circles with labels, active state in Slate Teal (`#3da29d`), completed in Deep Indigo (`#515fbc`), locked in Cool Gray (`#6c757d`)
+- Enhanced connection card with health stats: Latency `12ms`, Uptime `99.8%`, Protocol `RFC/BAPI`
+- Licensing compliance banner: "Digital Access — Read-Only Analytics Mode"
+- Connection toggle (existing) + Sync Now button
+- Last sync timestamp and delta changes count
 
-1. **Expand `getReportPreview()`** — Each case returns a structured JSX block with:
-   - A row of 3 compact KPI cards (icon, value, label)
-   - A small data table (3-5 rows) with topic-specific columns
-   - The existing chart (kept but resized to ~140px height)
-   - For `spend-analysis`: add the AI alerts section matching the PDF format
+### Step 2: Discover (Table Browser)
 
-2. **Increase preview panel height** — Change from `h-fit` to allow scrollable content with `max-h-[600px] overflow-y-auto`
+- Search input to filter tables by name/description
+- Category filter dropdown: All / Material / Procurement / Sales / Quality / Production
+- Enhanced table rows showing column count and key fields
+- "Export to Insights" button triggers a toast
+- Stale tables highlighted with amber background
 
-3. **Add helper components inline** — Small `KpiCard` and `DataRow` render helpers within the file for the structured layout
+### Step 3: Sync & Map (The Engine)
 
-4. **Update mock datasets** — Enrich existing datasets (e.g., `supplierScorecardData` add `leadTime` and `rating` fields, `inventoryData` add `turnover` field) to support the table views
+- **Locked** when connection toggle is off (Step 1)
+- Sync status table: each SAP table with sync mode (Delta/Full), last sync, records synced, animated progress bar
+- "Force Sync" button per table — simulates progress animation with record count
+- Data Standardization preview card: raw SAP field → normalized field mapping (using real column names from the Excel: `EKPO.EBELN` → `PO Number`, `EKPO.NETWR` → `Net Order Value`, etc.)
+- "Off-Peak Deep Sync" toggle (cosmetic)
+
+### Step 4: Alert Logic (The Observer)
+
+- Scrollable alert tray with severity badges (critical/warning/info)
+- Alert configuration toggles: Shortage Risk, Stale Data, Quality Gate, Price Variance
+- Deep-link action buttons per alert
+- HANA Performance section with Delta vs Deep sync scheduling controls
+
+---
+
+### Mock Data Updates (`src/data/mockData.ts`)
+
+Enrich `sapTables` with `columns`, `keyFields`, `category`, and `syncMode` fields. Add:
+
+```
+sapTables enhanced:
+  MARA → category: "Material", columns: 48, keyFields: ["MATNR", "MTART", "MATKL"]
+  EKPO → category: "Procurement", columns: 53, keyFields: ["EBELN", "EBELP", "MATNR", "NETWR"]
+  STPO → category: "Production", columns: 32, keyFields: ["STLNR", "STLKN", "IDNRK"]
+  QALS → category: "Quality", columns: 28, keyFields: ["PRUEFLOS", "MATNR", "STAT"]
+  VBAP → category: "Sales", columns: 41, keyFields: ["VBELN", "POSNR", "MATNR"]
+  AFKO → category: "Production", columns: 35, keyFields: ["AUFNR", "PLNBEZ", "GAMNG"]
+```
+
+Add new arrays:
+- `sapFieldMappings`: SAP raw fields → normalized dashboard fields (e.g., `EKPO.EBELN` → "PO Number", `EKPO.LIFNR` → "Supplier ID", `EKPO.NETWR` → "Net Order Value")
+- `sapAlertConfig`: alert type toggles with thresholds
+- `sapPurchaseOrders`: 8-10 representative rows from the Excel for the Step 3 preview table
+
+Sample PO data derived from the Excel (realistic supplier names, material descriptions, values):
+
+| PO | Supplier | Material | Qty | Net Value | Currency | Status |
+|----|----------|----------|-----|-----------|----------|--------|
+| 4500000001 | Pinnacle Mechanical Parts | PCB Standoff M3x5mm | 200 | ₹1,032 | INR | Completed |
+| 4500000001 | Meridian Technologies | Op-Amp SOT23-5 | 500 | $174 | USD | Completed |
+| 4500000016 | Meridian Technologies | MCU ARM Cortex-M4 | 1,000 | $3,484 | USD | Partial |
+| 4500000010 | Pacific Trading | Wi-Fi Module 802.11 | 5,000 | $23,610 | USD | Completed |
+| 4500000021 | Vertex Electronic | Zener Diode 3.3V | 2,000 | $72 | USD | Completed |
+| 4500000034 | Solaris Cable & Wire | Ribbon Cable 10-Pin | 500 | ₹5,642 | INR | Partial |
+| 4500000027 | Nexus Semiconductors | Zener Diode 3.3V | 5,000 | $159 | USD | Open |
+| 4500000032 | Atlas Precision Eng. | PCB Prototype Service | 2 | ₹116,909 | INR | Partial |
+
+---
 
 ### Files to Modify
-- `src/pages/Reports.tsx` — Main changes: expand `getReportPreview()` with executive-style content for all 12 reports, add KPI cards and data tables, update preview panel sizing
 
-### No changes needed to:
-- `src/data/mockData.ts` — All additional data will be defined inline in Reports.tsx alongside existing preview datasets
-- Other files remain untouched
+1. **`src/data/mockData.ts`** — Enrich `sapTables` with new fields; add `sapFieldMappings`, `sapAlertConfig`, `sapPurchaseOrders` arrays
+2. **`src/pages/SapBridge.tsx`** — Complete rewrite with stepper wizard, 4 conditional step panels, search/filter, sync simulation, alert configuration
+
+### UI Component Usage
+- Existing: `Card`, `Button`, `Badge`, `Switch`, `Table`, `Input`, `Progress`, `Tabs`
+- Icons from lucide-react: `Plug`, `RefreshCw`, `AlertTriangle`, `CheckCircle2`, `Clock`, `Database`, `Search`, `Lock`, `Shield`, `Zap`, `ArrowRight`, `Settings`, `Bell`
+- Toast notifications via `sonner` for "Export to Insights" and "Force Sync" actions
+- All state managed with `useState` — no new dependencies needed
 
