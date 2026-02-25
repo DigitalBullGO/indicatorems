@@ -1,88 +1,71 @@
 
 
-## Plan: AI Bridge for SAP — 4-Step Stepper Wizard Implementation
+## Plan: Excel to Dashboard — 4-Step Stepper Wizard Implementation
 
 ### Overview
 
-Complete rewrite of `src/pages/SapBridge.tsx` as a 4-step stepper wizard with enriched mock data derived from the uploaded SAP S/4HANA Purchase Order export.
+Rewrite `src/pages/ExcelDashboard.tsx` from a simple upload-then-view page into a 4-step wizard: **Intake → Transform → Analyze → Visualize**, following the document's specifications.
 
 ---
 
-### Step 1: Authenticate & Establish Bridge
+### Step 1: Data Intake ("Intake")
 
-- Horizontal stepper bar at the top: numbered circles with labels, active state in Slate Teal (`#3da29d`), completed in Deep Indigo (`#515fbc`), locked in Cool Gray (`#6c757d`)
-- Enhanced connection card with health stats: Latency `12ms`, Uptime `99.8%`, Protocol `RFC/BAPI`
-- Licensing compliance banner: "Digital Access — Read-Only Analytics Mode"
-- Connection toggle (existing) + Sync Now button
-- Last sync timestamp and delta changes count
+- Horizontal stepper bar at the top (same visual pattern as SAP Bridge: numbered circles, active in Slate Teal, completed in Deep Indigo, locked in Cool Gray)
+- Existing drag-and-drop upload zone (keep current styling)
+- After upload, show a **Column Mapping** interface: a table showing uploaded headers on the left and dropdown selectors on the right to map to system fields (Supplier Name, Commodity Category, Spend Amount, MPN, Qty, Unit Cost)
+- "Skip to Quote" shortcut button for power users — navigates to `/excel-quote`
+- File metadata badge row (filename, rows × columns)
 
-### Step 2: Discover (Table Browser)
+### Step 2: Smart Transformation ("Transform")
 
-- Search input to filter tables by name/description
-- Category filter dropdown: All / Material / Procurement / Sales / Quality / Production
-- Enhanced table rows showing column count and key fields
-- "Export to Insights" button triggers a toast
-- Stale tables highlighted with amber background
+- **Automated Cleansing Summary**: Show a card with cleansing stats (e.g., "14 MPN formats standardized", "3 duplicate rows removed", "2 blank fields filled")
+- **Data Cleaning Log**: A scrollable panel showing before/after diffs for each correction (raw value → corrected value, with correction type badge)
+- **Before & After Preview**: Side-by-side mini-tables showing raw data vs. standardized data so users can verify transformations
+- **Locked** until Step 1 mapping is confirmed
 
-### Step 3: Sync & Map (The Engine)
+### Step 3: Intelligence & LLM Reasoning ("Analyze")
 
-- **Locked** when connection toggle is off (Step 1)
-- Sync status table: each SAP table with sync mode (Delta/Full), last sync, records synced, animated progress bar
-- "Force Sync" button per table — simulates progress animation with record count
-- Data Standardization preview card: raw SAP field → normalized field mapping (using real column names from the Excel: `EKPO.EBELN` → `PO Number`, `EKPO.NETWR` → `Net Order Value`, etc.)
-- "Off-Peak Deep Sync" toggle (cosmetic)
+- **Purpose Selector**: Radio group asking "What is the purpose of this upload?" with options: Deep Analysis, Create Analytics/Reports, Generate RFQ, Sales Quote
+- If "Sales Quote" or "RFQ" is selected, show a recommendation banner: "We recommend switching to the BOM to Quote agent" with a navigation button
+- **LLM Switcher**: A prominent toggle/radio group to select the analysis model:
+  - Claude 3.5 Sonnet (recommended for detailed reasoning & anomalies)
+  - GPT-4o (best for high-speed summaries)
+  - Local LLM (for offline/private analysis)
+  - Each option has a tooltip describing its strength
+- **Analysis Output**: A mock AI analysis card showing identified insights (pricing anomalies, spend concentration, supplier risk)
+- **Locked** until Step 2 is completed
 
-### Step 4: Alert Logic (The Observer)
+### Step 4: Executive Visualization ("Visualize")
 
-- Scrollable alert tray with severity badges (critical/warning/info)
-- Alert configuration toggles: Shortage Risk, Stale Data, Quality Gate, Price Variance
-- Deep-link action buttons per alert
-- HANA Performance section with Delta vs Deep sync scheduling controls
-
----
-
-### Mock Data Updates (`src/data/mockData.ts`)
-
-Enrich `sapTables` with `columns`, `keyFields`, `category`, and `syncMode` fields. Add:
-
-```
-sapTables enhanced:
-  MARA → category: "Material", columns: 48, keyFields: ["MATNR", "MTART", "MATKL"]
-  EKPO → category: "Procurement", columns: 53, keyFields: ["EBELN", "EBELP", "MATNR", "NETWR"]
-  STPO → category: "Production", columns: 32, keyFields: ["STLNR", "STLKN", "IDNRK"]
-  QALS → category: "Quality", columns: 28, keyFields: ["PRUEFLOS", "MATNR", "STAT"]
-  VBAP → category: "Sales", columns: 41, keyFields: ["VBELN", "POSNR", "MATNR"]
-  AFKO → category: "Production", columns: 35, keyFields: ["AUFNR", "PLNBEZ", "GAMNG"]
-```
-
-Add new arrays:
-- `sapFieldMappings`: SAP raw fields → normalized dashboard fields (e.g., `EKPO.EBELN` → "PO Number", `EKPO.LIFNR` → "Supplier ID", `EKPO.NETWR` → "Net Order Value")
-- `sapAlertConfig`: alert type toggles with thresholds
-- `sapPurchaseOrders`: 8-10 representative rows from the Excel for the Step 3 preview table
-
-Sample PO data derived from the Excel (realistic supplier names, material descriptions, values):
-
-| PO | Supplier | Material | Qty | Net Value | Currency | Status |
-|----|----------|----------|-----|-----------|----------|--------|
-| 4500000001 | Pinnacle Mechanical Parts | PCB Standoff M3x5mm | 200 | ₹1,032 | INR | Completed |
-| 4500000001 | Meridian Technologies | Op-Amp SOT23-5 | 500 | $174 | USD | Completed |
-| 4500000016 | Meridian Technologies | MCU ARM Cortex-M4 | 1,000 | $3,484 | USD | Partial |
-| 4500000010 | Pacific Trading | Wi-Fi Module 802.11 | 5,000 | $23,610 | USD | Completed |
-| 4500000021 | Vertex Electronic | Zener Diode 3.3V | 2,000 | $72 | USD | Completed |
-| 4500000034 | Solaris Cable & Wire | Ribbon Cable 10-Pin | 500 | ₹5,642 | INR | Partial |
-| 4500000027 | Nexus Semiconductors | Zener Diode 3.3V | 5,000 | $159 | USD | Open |
-| 4500000032 | Atlas Precision Eng. | PCB Prototype Service | 2 | ₹116,909 | INR | Partial |
+- Move the existing charts and KPI cards here (Cost by MPN bar chart, Spend by Commodity pie, KPI summary cards)
+- Add additional visualizations: Spend Trends line, Currency Exposure breakdown
+- **"Switch to Agent" button**: Handoff to BOM to Quote (`/excel-quote`) passing context
+- **Locked** until Step 3 is completed
 
 ---
+
+### Mock Data
+
+All mock data defined inline in the component (no changes to `mockData.ts`):
+- `cleaningLog`: Array of `{ raw, corrected, type, field }` entries (e.g., `{ raw: "rc0402fr07", corrected: "RC0402FR-07", type: "MPN Format", field: "MPN" }`)
+- `columnMappingOptions`: System fields for the mapping dropdowns
+- `llmModels`: Array of `{ id, name, description, recommended }` for the LLM switcher
+- `analysisInsights`: Mock AI-generated insights for Step 3 output
+
+### Navigation & State
+
+- `activeStep` state (0-3) with Next/Back buttons
+- Steps 2, 3, 4 locked until prior step is "confirmed" via a `stepsCompleted` state object
+- Column mapping confirmation unlocks Step 2; cleansing review confirmation unlocks Step 3; purpose selection + analysis unlocks Step 4
 
 ### Files to Modify
 
-1. **`src/data/mockData.ts`** — Enrich `sapTables` with new fields; add `sapFieldMappings`, `sapAlertConfig`, `sapPurchaseOrders` arrays
-2. **`src/pages/SapBridge.tsx`** — Complete rewrite with stepper wizard, 4 conditional step panels, search/filter, sync simulation, alert configuration
+1. **`src/pages/ExcelDashboard.tsx`** — Complete rewrite with 4-step stepper wizard
 
-### UI Component Usage
-- Existing: `Card`, `Button`, `Badge`, `Switch`, `Table`, `Input`, `Progress`, `Tabs`
-- Icons from lucide-react: `Plug`, `RefreshCw`, `AlertTriangle`, `CheckCircle2`, `Clock`, `Database`, `Search`, `Lock`, `Shield`, `Zap`, `ArrowRight`, `Settings`, `Bell`
-- Toast notifications via `sonner` for "Export to Insights" and "Force Sync" actions
-- All state managed with `useState` — no new dependencies needed
+### UI Components Used
+- Existing: `Card`, `Button`, `Badge`, `Table`, `Input`, `Select`, `Switch`, `Progress`
+- Icons: `Upload`, `FileSpreadsheet`, `BarChart3`, `PieChart`, `Sparkles`, `CheckCircle2`, `ArrowRight`, `ArrowLeft`, `Lock`, `Brain`, `Wand2`, `RefreshCw`, `ExternalLink`
+- Charts: `BarChart`, `PieChart`, `LineChart` from recharts
+- Toast via `sonner` for confirmations
+- `useNavigate` from react-router-dom for agent handoff navigation
 
