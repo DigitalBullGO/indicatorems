@@ -21,6 +21,13 @@ import BusinessCommModal from "@/components/templates/BusinessCommModal";
 import ReportModal from "@/components/templates/ReportModal";
 import ReportPreviewModal from "@/components/templates/ReportPreviewModal";
 
+// Category accent colors (Slate Teal, Amber Gold, Deep Indigo)
+const categoryColors = {
+  ai: { bg: "hsl(177, 55%, 39%)", bgLight: "hsl(177, 55%, 95%)", border: "hsl(177, 55%, 39%)", text: "hsl(177, 55%, 32%)" },
+  comm: { bg: "hsl(45, 100%, 50%)", bgLight: "hsl(45, 100%, 95%)", border: "hsl(45, 100%, 50%)", text: "hsl(45, 100%, 35%)" },
+  report: { bg: "hsl(232, 48%, 48%)", bgLight: "hsl(232, 48%, 95%)", border: "hsl(232, 48%, 48%)", text: "hsl(232, 48%, 40%)" },
+};
+
 // Section headers
 const aiSections = [
   { key: "sourcing" as const, label: "Sourcing & Procurement", icon: ShoppingCart },
@@ -95,7 +102,7 @@ export default function Templates() {
           </TabsTrigger>
         </TabsList>
 
-        {/* ── TAB 1: AI Prompt Templates ── */}
+        {/* ── TAB 1: AI Prompts ── */}
         <TabsContent value="ai-prompts" className="space-y-8">
           {aiSections.map((section) => {
             const items = filteredAI.filter((t) => t.section === section.key);
@@ -103,7 +110,7 @@ export default function Templates() {
             return (
               <div key={section.key}>
                 <h2 className="text-base font-bold flex items-center gap-2 mb-4">
-                  <section.icon className="h-5 w-5 text-primary" />
+                  <section.icon className="h-5 w-5" style={{ color: categoryColors.ai.bg }} />
                   {section.label}
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -116,6 +123,7 @@ export default function Templates() {
                       actionLabel="Use Template"
                       actionIcon={<Sparkles className="h-3 w-3" />}
                       onAction={() => setSelectedAI(t)}
+                      accentColor={categoryColors.ai}
                     />
                   ))}
                 </div>
@@ -133,7 +141,7 @@ export default function Templates() {
             return (
               <div key={section.key}>
                 <h2 className="text-base font-bold flex items-center gap-2 mb-4">
-                  <FileText className="h-5 w-5 text-indigo" />
+                  <FileText className="h-5 w-5" style={{ color: categoryColors.comm.bg }} />
                   {section.label}
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -146,6 +154,7 @@ export default function Templates() {
                       actionLabel="Open Template"
                       actionIcon={<FileText className="h-3 w-3" />}
                       onAction={() => setSelectedComm(t)}
+                      accentColor={categoryColors.comm}
                     />
                   ))}
                 </div>
@@ -180,6 +189,7 @@ export default function Templates() {
                       onAction={() => t.section === "dynamic" ? setPreviewReport(t) : setSelectedReport(t)}
                       showPreview={t.section === "dynamic"}
                       onPreview={() => setPreviewReport(t)}
+                      accentColor={categoryColors.report}
                     />
                   ))}
                 </div>
@@ -211,6 +221,7 @@ function TemplateCard({
   onAction,
   showPreview,
   onPreview,
+  accentColor,
 }: {
   title: string;
   subtitle: string;
@@ -222,20 +233,28 @@ function TemplateCard({
   onAction: () => void;
   showPreview?: boolean;
   onPreview?: () => void;
+  accentColor?: { bg: string; bgLight: string; border: string; text: string };
 }) {
+  const accent = accentColor || { bg: "hsl(var(--primary))", bgLight: "hsl(var(--accent))", border: "hsl(var(--primary))", text: "hsl(var(--primary))" };
+
   return (
-    <Card className="hover:border-primary/40 hover:shadow-md transition-all shadow-sm">
+    <Card
+      className="hover:shadow-md transition-all shadow-sm"
+      style={{ borderColor: "transparent" }}
+      onMouseEnter={(e) => (e.currentTarget.style.borderColor = accent.border + "66")}
+      onMouseLeave={(e) => (e.currentTarget.style.borderColor = "transparent")}
+    >
       <CardContent className="p-0">
         {/* Preview Thumbnail */}
-        <div className="h-28 bg-muted/50 rounded-t-lg flex items-center justify-center relative">
-          <FileSpreadsheet className="h-10 w-10 text-muted-foreground/30" />
+        <div className="h-28 rounded-t-lg flex items-center justify-center relative" style={{ backgroundColor: accent.bgLight }}>
+          <FileSpreadsheet className="h-10 w-10" style={{ color: accent.bg + "44" }} />
           {premium && (
             <Badge className="absolute top-2 right-2 bg-amber text-amber-foreground gap-1">
               <Star className="h-3 w-3" />Premium
             </Badge>
           )}
           {isNew && (
-            <Badge className="absolute top-2 right-2 bg-primary text-primary-foreground gap-1">New</Badge>
+            <Badge className="absolute top-2 right-2" style={{ backgroundColor: accent.bg, color: "#fff" }}>New</Badge>
           )}
         </div>
         <div className="p-4">
@@ -243,7 +262,12 @@ function TemplateCard({
           <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{subtitle}</p>
           <p className="text-xs text-muted-foreground mt-1.5">{downloads} downloads</p>
           <div className="flex gap-2 mt-3">
-            <Button size="sm" className="text-xs gap-1 flex-1" onClick={onAction}>
+            <Button
+              size="sm"
+              className="text-xs gap-1 flex-1 text-white"
+              style={{ backgroundColor: accent.bg }}
+              onClick={onAction}
+            >
               {actionIcon}
               {actionLabel}
             </Button>

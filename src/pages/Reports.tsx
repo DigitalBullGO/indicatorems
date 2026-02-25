@@ -5,16 +5,215 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FileText, TrendingUp, Search, BarChart3, Download, Eye } from "lucide-react";
-import { reportTypes, spendByCommodity, monthlyRevenue } from "@/data/mockData";
+import { reportTypes, spendByCommodity } from "@/data/mockData";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 
 const COLORS = [
-  "hsl(153, 99%, 31%)",
-  "hsl(232, 48%, 48%)",
-  "hsl(45, 100%, 50%)",
-  "hsl(353, 33%, 58%)",
-  "hsl(210, 7%, 46%)",
+  "hsl(177, 55%, 39%)",   // Slate Teal
+  "hsl(232, 48%, 48%)",   // Deep Indigo
+  "hsl(45, 100%, 50%)",   // Amber Gold
+  "hsl(353, 33%, 58%)",   // Dusty Rose
+  "hsl(210, 7%, 46%)",    // Cool Gray
 ];
+
+// Report-specific preview datasets
+const bomBreakdownData = [
+  { name: "ICs", value: 42 },
+  { name: "Passives", value: 28 },
+  { name: "Connectors", value: 15 },
+  { name: "PCBs", value: 10 },
+  { name: "Power", value: 5 },
+];
+
+const supplierScorecardData = [
+  { name: "Mouser", otd: 96, quality: 99.2 },
+  { name: "Digi-Key", otd: 98, quality: 99.5 },
+  { name: "Arrow", otd: 91, quality: 98.8 },
+  { name: "Würth", otd: 88, quality: 99.0 },
+];
+
+const leadTimeData = [
+  { name: "TUSB320", days: 130 },
+  { name: "STM32F4", days: 56 },
+  { name: "744771", days: 35 },
+  { name: "SN74LVC", days: 28 },
+  { name: "GRM155", days: 21 },
+];
+
+const inventoryData = [
+  { name: "Passives", value: 520000 },
+  { name: "ICs", value: 48400 },
+  { name: "Power", value: 20500 },
+  { name: "Connectors", value: 12000 },
+];
+
+const grnData = [
+  { name: "Jan", received: 45, pending: 12 },
+  { name: "Feb", received: 52, pending: 8 },
+  { name: "Mar", received: 61, pending: 15 },
+  { name: "Apr", received: 48, pending: 6 },
+];
+
+const qualityData = [
+  { name: "Line A", yield: 99.2 },
+  { name: "Line B", yield: 98.7 },
+  { name: "Line C", yield: 99.5 },
+  { name: "Line D", yield: 97.8 },
+];
+
+const agingData = [
+  { name: "0-30d", value: 45 },
+  { name: "31-60d", value: 28 },
+  { name: "61-90d", value: 15 },
+  { name: "90+d", value: 8 },
+];
+
+const salesData = [
+  { name: "EMEA", value: 7840 },
+  { name: "Americas", value: 5070 },
+  { name: "APAC", value: 1870 },
+];
+
+function getReportPreview(reportId: string) {
+  switch (reportId) {
+    case "spend-analysis":
+      return (
+        <ResponsiveContainer width="100%" height={200}>
+          <PieChart>
+            <Pie data={spendByCommodity} cx="50%" cy="50%" innerRadius={40} outerRadius={70} dataKey="value" nameKey="name">
+              {spendByCommodity.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+            </Pie>
+            <Tooltip formatter={(v: number) => `$${(v / 1000).toFixed(0)}K`} />
+          </PieChart>
+        </ResponsiveContainer>
+      );
+    case "bom-breakdown":
+      return (
+        <ResponsiveContainer width="100%" height={200}>
+          <BarChart data={bomBreakdownData} layout="vertical">
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(210, 7%, 88%)" horizontal={false} />
+            <XAxis type="number" fontSize={11} stroke="hsl(210, 7%, 46%)" />
+            <YAxis dataKey="name" type="category" fontSize={11} stroke="hsl(210, 7%, 46%)" width={70} />
+            <Tooltip formatter={(v: number) => `${v}%`} />
+            <Bar dataKey="value" fill="hsl(177, 55%, 39%)" radius={[0, 3, 3, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      );
+    case "supplier-scorecard":
+      return (
+        <ResponsiveContainer width="100%" height={200}>
+          <BarChart data={supplierScorecardData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(210, 7%, 88%)" />
+            <XAxis dataKey="name" fontSize={11} stroke="hsl(210, 7%, 46%)" />
+            <YAxis fontSize={11} stroke="hsl(210, 7%, 46%)" domain={[80, 100]} />
+            <Tooltip />
+            <Bar dataKey="otd" fill="hsl(177, 55%, 39%)" radius={[3, 3, 0, 0]} name="OTD %" />
+            <Bar dataKey="quality" fill="hsl(353, 33%, 58%)" radius={[3, 3, 0, 0]} name="Quality %" />
+          </BarChart>
+        </ResponsiveContainer>
+      );
+    case "lead-time-120":
+      return (
+        <ResponsiveContainer width="100%" height={200}>
+          <BarChart data={leadTimeData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(210, 7%, 88%)" />
+            <XAxis dataKey="name" fontSize={10} stroke="hsl(210, 7%, 46%)" />
+            <YAxis fontSize={11} stroke="hsl(210, 7%, 46%)" />
+            <Tooltip formatter={(v: number) => `${v} days`} />
+            <Bar dataKey="days" fill="hsl(45, 100%, 50%)" radius={[3, 3, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      );
+    case "inventory":
+      return (
+        <ResponsiveContainer width="100%" height={200}>
+          <BarChart data={inventoryData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(210, 7%, 88%)" />
+            <XAxis dataKey="name" fontSize={11} stroke="hsl(210, 7%, 46%)" />
+            <YAxis fontSize={11} stroke="hsl(210, 7%, 46%)" tickFormatter={(v) => `${(v/1000).toFixed(0)}K`} />
+            <Tooltip formatter={(v: number) => v.toLocaleString()} />
+            <Bar dataKey="value" fill="hsl(232, 48%, 48%)" radius={[3, 3, 0, 0]} name="Units" />
+          </BarChart>
+        </ResponsiveContainer>
+      );
+    case "grn-pos":
+      return (
+        <ResponsiveContainer width="100%" height={200}>
+          <BarChart data={grnData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(210, 7%, 88%)" />
+            <XAxis dataKey="name" fontSize={11} stroke="hsl(210, 7%, 46%)" />
+            <YAxis fontSize={11} stroke="hsl(210, 7%, 46%)" />
+            <Tooltip />
+            <Bar dataKey="received" fill="hsl(177, 55%, 39%)" radius={[3, 3, 0, 0]} name="Received" />
+            <Bar dataKey="pending" fill="hsl(45, 100%, 50%)" radius={[3, 3, 0, 0]} name="Pending" />
+          </BarChart>
+        </ResponsiveContainer>
+      );
+    case "quality-yield":
+      return (
+        <ResponsiveContainer width="100%" height={200}>
+          <BarChart data={qualityData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(210, 7%, 88%)" />
+            <XAxis dataKey="name" fontSize={11} stroke="hsl(210, 7%, 46%)" />
+            <YAxis fontSize={11} stroke="hsl(210, 7%, 46%)" domain={[96, 100]} />
+            <Tooltip formatter={(v: number) => `${v}%`} />
+            <Bar dataKey="yield" fill="hsl(177, 55%, 39%)" radius={[3, 3, 0, 0]} name="Yield %" />
+          </BarChart>
+        </ResponsiveContainer>
+      );
+    case "aging-customer":
+    case "aging-supplier":
+      return (
+        <ResponsiveContainer width="100%" height={200}>
+          <BarChart data={agingData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(210, 7%, 88%)" />
+            <XAxis dataKey="name" fontSize={11} stroke="hsl(210, 7%, 46%)" />
+            <YAxis fontSize={11} stroke="hsl(210, 7%, 46%)" />
+            <Tooltip />
+            <Bar dataKey="value" fill="hsl(353, 33%, 58%)" radius={[3, 3, 0, 0]} name="Count" />
+          </BarChart>
+        </ResponsiveContainer>
+      );
+    case "customer-sales":
+      return (
+        <ResponsiveContainer width="100%" height={200}>
+          <BarChart data={salesData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(210, 7%, 88%)" />
+            <XAxis dataKey="name" fontSize={11} stroke="hsl(210, 7%, 46%)" />
+            <YAxis fontSize={11} stroke="hsl(210, 7%, 46%)" tickFormatter={(v) => `$${(v/1000).toFixed(0)}K`} />
+            <Tooltip formatter={(v: number) => `$${(v/1000).toFixed(0)}K`} />
+            <Bar dataKey="value" fill="hsl(232, 48%, 48%)" radius={[3, 3, 0, 0]} name="Revenue" />
+          </BarChart>
+        </ResponsiveContainer>
+      );
+    case "org-drilldown":
+      return (
+        <ResponsiveContainer width="100%" height={200}>
+          <BarChart data={bomBreakdownData} layout="vertical">
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(210, 7%, 88%)" horizontal={false} />
+            <XAxis type="number" fontSize={11} stroke="hsl(210, 7%, 46%)" />
+            <YAxis dataKey="name" type="category" fontSize={11} stroke="hsl(210, 7%, 46%)" width={70} />
+            <Tooltip />
+            <Bar dataKey="value" fill="hsl(177, 55%, 39%)" radius={[0, 3, 3, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      );
+    case "iqc-report":
+      return (
+        <ResponsiveContainer width="100%" height={200}>
+          <BarChart data={qualityData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(210, 7%, 88%)" />
+            <XAxis dataKey="name" fontSize={11} stroke="hsl(210, 7%, 46%)" />
+            <YAxis fontSize={11} stroke="hsl(210, 7%, 46%)" domain={[96, 100]} />
+            <Tooltip formatter={(v: number) => `${v}%`} />
+            <Bar dataKey="yield" fill="hsl(45, 100%, 50%)" radius={[3, 3, 0, 0]} name="Pass Rate %" />
+          </BarChart>
+        </ResponsiveContainer>
+      );
+    default:
+      return <p className="text-sm text-muted-foreground text-center py-8">Select a report to preview</p>;
+  }
+}
 
 export default function Reports() {
   const [filter, setFilter] = useState("all");
@@ -84,29 +283,10 @@ export default function Reports() {
         </div>
 
         {/* Preview Panel */}
-        <Card className="h-fit shadow-sm">
+        <Card className="h-fit card-premium shadow-sm">
           <CardHeader className="pb-2"><CardTitle className="text-base text-indigo">Report Preview</CardTitle></CardHeader>
           <CardContent>
-            {selectedReport === "spend-analysis" ? (
-              <ResponsiveContainer width="100%" height={200}>
-                <PieChart>
-                  <Pie data={spendByCommodity} cx="50%" cy="50%" innerRadius={40} outerRadius={70} dataKey="value" nameKey="name">
-                    {spendByCommodity.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
-                  </Pie>
-                  <Tooltip formatter={(v: number) => `$${(v / 1000).toFixed(0)}K`} />
-                </PieChart>
-              </ResponsiveContainer>
-            ) : selectedReport ? (
-              <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={monthlyRevenue.slice(0, 4)}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(210, 7%, 88%)" />
-                  <XAxis dataKey="month" fontSize={11} stroke="hsl(210, 7%, 46%)" />
-                  <YAxis fontSize={11} stroke="hsl(210, 7%, 46%)" />
-                  <Tooltip />
-                  <Bar dataKey="revenue" fill="hsl(153, 99%, 31%)" radius={[3,3,0,0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
+            {selectedReport ? getReportPreview(selectedReport) : (
               <p className="text-sm text-muted-foreground text-center py-8">Select a report to preview</p>
             )}
           </CardContent>
