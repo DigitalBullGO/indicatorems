@@ -46,6 +46,10 @@ export default function Templates() {
   const [selectedReport, setSelectedReport] = useState<ReportTemplate | null>(null);
   const [previewReport, setPreviewReport] = useState<ReportTemplate | null>(null);
 
+  const handleUseTemplate = (template: ReportTemplate) => {
+    setSelectedReport(template);
+  };
+
   const q = search.toLowerCase();
 
   const filteredAI = useMemo(
@@ -171,9 +175,9 @@ export default function Templates() {
                       downloads={t.downloads}
                       premium={t.premium}
                       isNew={t.isNew}
-                      actionLabel={t.section === "dynamic" ? "Generate Report" : "Download"}
-                      actionIcon={<Download className="h-3 w-3" />}
-                      onAction={() => setSelectedReport(t)}
+                      actionLabel={t.section === "dynamic" ? "Use this template" : "Download"}
+                      actionIcon={t.section === "dynamic" ? <Eye className="h-3 w-3" /> : <Download className="h-3 w-3" />}
+                      onAction={() => t.section === "dynamic" ? setPreviewReport(t) : setSelectedReport(t)}
                       showPreview={t.section === "dynamic"}
                       onPreview={() => setPreviewReport(t)}
                     />
@@ -190,7 +194,7 @@ export default function Templates() {
       <AIPromptModal template={selectedAI} open={!!selectedAI} onOpenChange={(o) => !o && setSelectedAI(null)} />
       <BusinessCommModal template={selectedComm} open={!!selectedComm} onOpenChange={(o) => !o && setSelectedComm(null)} />
       <ReportModal template={selectedReport} open={!!selectedReport} onOpenChange={(o) => !o && setSelectedReport(null)} />
-      <ReportPreviewModal template={previewReport} open={!!previewReport} onOpenChange={(o) => !o && setPreviewReport(null)} />
+      <ReportPreviewModal template={previewReport} open={!!previewReport} onOpenChange={(o) => !o && setPreviewReport(null)} onUseTemplate={handleUseTemplate} />
     </div>
   );
 }
