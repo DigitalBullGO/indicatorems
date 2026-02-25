@@ -106,9 +106,10 @@ export default function Index() {
                 />
                 <Legend wrapperStyle={{ paddingTop: "12px" }} />
                 <Bar yAxisId="left" dataKey="revenue" radius={[6, 6, 0, 0]} name="Revenue">
-                  {monthlyRevenue.map((_, i) => (
-                    <Cell key={i} fill={i % 2 === 0 ? "hsl(177, 55%, 39%)" : "hsl(0, 0%, 0%)"} />
-                  ))}
+                  {monthlyRevenue.map((_, i) => {
+                    const colors = ["#3da29d", "#515fbc", "#ffc721"];
+                    return <Cell key={i} fill={colors[i % 3]} />;
+                  })}
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
