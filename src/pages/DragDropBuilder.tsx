@@ -65,7 +65,7 @@ export default function DragDropBuilder() {
         <div className="flex items-center justify-between mb-4">
           <div>
             <h1 className="text-2xl font-bold flex items-center gap-2 text-indigo"><LayoutGrid className="h-6 w-6 text-primary" />Drag & Drop Builder</h1>
-            <p className="text-muted-foreground text-sm">Click widgets to add them to the canvas.</p>
+            <p className="text-sm font-semibold text-muted-foreground">Click widgets to add them to the canvas.</p>
           </div>
           <Badge variant="outline">{widgets.length} widgets</Badge>
         </div>
@@ -84,7 +84,7 @@ export default function DragDropBuilder() {
                 {w.type === "kpi" && (
                   <div className="text-center py-4">
                     <p className="text-3xl font-bold text-foreground">$14.8M</p>
-                    <p className="text-xs text-muted-foreground mt-1">Total Revenue YTD</p>
+                    <p className="text-xs font-semibold text-muted-foreground mt-1">Total Revenue YTD</p>
                   </div>
                 )}
                 {w.type === "bar" && (

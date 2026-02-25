@@ -70,7 +70,7 @@ export default function AiInsights() {
       <div className="flex-1 flex flex-col">
         <div className="mb-4">
           <h1 className="text-2xl font-bold flex items-center gap-2 text-indigo"><Brain className="h-6 w-6 text-primary" /> AI Insights Pro</h1>
-          <p className="text-muted-foreground">Conversational AI for data analysis and actionable insights.</p>
+          <p className="text-sm font-semibold text-muted-foreground">Conversational AI for data analysis and actionable insights.</p>
         </div>
 
         <Card className="flex-1 flex flex-col shadow-sm">

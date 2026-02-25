@@ -39,7 +39,7 @@ export default function Index() {
       {/* Greeting */}
       <div>
         <h1 className="text-2xl font-bold text-indigo">Welcome back, Rajesh 👋</h1>
-        <p className="text-muted-foreground">Here's your manufacturing operations overview.</p>
+        <p className="text-sm font-semibold text-muted-foreground">Here's your manufacturing operations overview.</p>
       </div>
 
       {/* KPI Row */}
@@ -54,7 +54,7 @@ export default function Index() {
             <CardContent className="p-5">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{kpi.label}</p>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{kpi.label}</p>
                   <p className="text-2xl font-bold mt-1 text-foreground">{kpi.value}</p>
                   <div className="flex items-center gap-1 mt-1">
                     {kpi.up ? <TrendingUp className="h-3 w-3 text-primary" /> : <TrendingDown className="h-3 w-3 text-amber" />}

@@ -20,7 +20,7 @@ export default function SapBridge() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold flex items-center gap-2 text-indigo"><Plug className="h-6 w-6 text-primary" /> AI Bridge for SAP</h1>
-        <p className="text-muted-foreground">Integrate and sync data from SAP ERP systems.</p>
+        <p className="text-sm font-semibold text-muted-foreground">Integrate and sync data from SAP ERP systems.</p>
       </div>
 
       {/* Connection Status */}
