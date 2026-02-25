@@ -83,7 +83,7 @@ export default function DragDropBuilder() {
               <CardContent>
                 {w.type === "kpi" && (
                   <div className="text-center py-4">
-                    <p className="text-3xl font-bold text-primary">$14.8M</p>
+                    <p className="text-3xl font-bold text-foreground">$14.8M</p>
                     <p className="text-xs text-muted-foreground mt-1">Total Revenue YTD</p>
                   </div>
                 )}
