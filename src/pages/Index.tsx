@@ -1,33 +1,19 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
-  BarChart3, FileSpreadsheet, Brain, Plug, LayoutGrid, FileText, Library,
-  TrendingUp, TrendingDown, Package, Users, Clock, CheckCircle2, AlertTriangle, DollarSign
+  TrendingUp, TrendingDown, Package, Clock, CheckCircle2, AlertTriangle, DollarSign
 } from "lucide-react";
-import { Link } from "react-router-dom";
 import { kpiData, monthlyRevenue, spendByCommodity, departmentSpend, components } from "@/data/mockData";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, LineChart, Line, Legend, Area, AreaChart
+  PieChart, Pie, Cell, Line, Legend
 } from "recharts";
 
-const moduleCards = [
-  { title: "Excel to Dashboard", icon: BarChart3, url: "/excel-dashboard", desc: "Upload & visualize spreadsheets" },
-  { title: "Excel to Quote", icon: FileSpreadsheet, url: "/excel-quote", desc: "BOM to sales quote pipeline" },
-  { title: "AI Insights Pro", icon: Brain, url: "/ai-insights", desc: "Conversational data analysis" },
-  { title: "AI Bridge for SAP", icon: Plug, url: "/sap-bridge", desc: "SAP ERP data integration" },
-  { title: "Drag & Drop Builder", icon: LayoutGrid, url: "/drag-drop", desc: "Visual report builder" },
-  { title: "Pre-Engineered Reports", icon: FileText, url: "/reports", desc: "20+ standard reports" },
-  { title: "Template Library", icon: Library, url: "/templates", desc: "Ready-to-use templates" },
-];
-
 const COLORS = [
-  "hsl(153, 99%, 31%)",
-  "hsl(232, 48%, 48%)",
-  "hsl(45, 100%, 50%)",
-  "hsl(353, 33%, 58%)",
-  "hsl(174, 72%, 40%)",
+  "hsl(177, 55%, 39%)",   // Slate Teal
+  "hsl(232, 48%, 48%)",   // Deep Indigo
+  "hsl(45, 100%, 50%)",   // Amber Gold
+  "hsl(353, 33%, 58%)",   // Dusty Rose
+  "hsl(210, 7%, 46%)",    // Cool Gray
 ];
 
 const kpiGradients = [
@@ -77,8 +63,8 @@ export default function Index() {
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{kpi.label}</p>
                   <p className="text-2xl font-extrabold mt-1.5 text-foreground tracking-tight">{kpi.value}</p>
                   <div className="flex items-center gap-1 mt-1.5">
-                    {kpi.up ? <TrendingUp className="h-3.5 w-3.5 text-primary" /> : <TrendingDown className="h-3.5 w-3.5 text-amber" />}
-                    <span className={`text-xs font-bold ${kpi.up ? "text-primary" : "text-amber"}`}>{kpi.trend}</span>
+                    {kpi.up ? <TrendingUp className="h-3.5 w-3.5 text-teal" /> : <TrendingDown className="h-3.5 w-3.5 text-amber" />}
+                    <span className={`text-xs font-bold ${kpi.up ? "text-teal" : "text-amber"}`}>{kpi.trend}</span>
                   </div>
                 </div>
                 <div className={`h-12 w-12 rounded-xl ${kpiIconBgs[idx]} flex items-center justify-center`}>
@@ -92,7 +78,7 @@ export default function Index() {
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        {/* Revenue Trend - Area + Line combo */}
+        {/* Revenue Trend */}
         <Card className="lg:col-span-2 card-premium border-0">
           <CardHeader className="pb-2">
             <CardTitle className="text-base font-bold text-indigo">Monthly Revenue & Orders</CardTitle>
@@ -101,25 +87,25 @@ export default function Index() {
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={monthlyRevenue} barCategoryGap="20%">
                 <defs>
-                  <linearGradient id="barGreen" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="hsl(153, 99%, 38%)" stopOpacity={1} />
-                    <stop offset="100%" stopColor="hsl(153, 99%, 28%)" stopOpacity={0.85} />
+                  <linearGradient id="barTeal" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="hsl(177, 55%, 44%)" stopOpacity={1} />
+                    <stop offset="100%" stopColor="hsl(177, 55%, 34%)" stopOpacity={0.85} />
                   </linearGradient>
                   <linearGradient id="lineIndigo" x1="0" y1="0" x2="1" y2="0">
                     <stop offset="0%" stopColor="hsl(232, 48%, 48%)" />
-                    <stop offset="100%" stopColor="hsl(270, 50%, 55%)" />
+                    <stop offset="100%" stopColor="hsl(232, 48%, 58%)" />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(210, 7%, 90%)" vertical={false} />
-                <XAxis dataKey="month" fontSize={12} stroke="hsl(210, 7%, 56%)" tickLine={false} axisLine={false} />
-                <YAxis yAxisId="left" fontSize={12} tickFormatter={(v) => `$${v / 1e6}M`} stroke="hsl(210, 7%, 56%)" tickLine={false} axisLine={false} />
-                <YAxis yAxisId="right" orientation="right" fontSize={12} stroke="hsl(210, 7%, 56%)" tickLine={false} axisLine={false} />
+                <XAxis dataKey="month" fontSize={12} stroke="hsl(210, 7%, 46%)" tickLine={false} axisLine={false} />
+                <YAxis yAxisId="left" fontSize={12} tickFormatter={(v) => `$${v / 1e6}M`} stroke="hsl(210, 7%, 46%)" tickLine={false} axisLine={false} />
+                <YAxis yAxisId="right" orientation="right" fontSize={12} stroke="hsl(210, 7%, 46%)" tickLine={false} axisLine={false} />
                 <Tooltip
                   formatter={(value: number, name: string) => [name === "revenue" ? `$${(value / 1e6).toFixed(2)}M` : value, name === "revenue" ? "Revenue" : "Orders"]}
                   contentStyle={{ borderRadius: "10px", border: "none", boxShadow: "0 8px 24px -4px rgba(0,0,0,0.12)" }}
                 />
                 <Legend wrapperStyle={{ paddingTop: "12px" }} />
-                <Bar yAxisId="left" dataKey="revenue" fill="url(#barGreen)" radius={[6, 6, 0, 0]} name="Revenue" />
+                <Bar yAxisId="left" dataKey="revenue" fill="url(#barTeal)" radius={[6, 6, 0, 0]} name="Revenue" />
                 <Line yAxisId="right" type="monotone" dataKey="orders" stroke="url(#lineIndigo)" strokeWidth={3} dot={{ fill: "hsl(232, 48%, 48%)", strokeWidth: 0, r: 4 }} activeDot={{ r: 6, fill: "hsl(232, 48%, 48%)" }} name="Orders" />
               </BarChart>
             </ResponsiveContainer>
@@ -184,25 +170,6 @@ export default function Index() {
         </Card>
       )}
 
-      {/* Module Quick Access */}
-      <div>
-        <h2 className="text-lg font-bold mb-4 text-indigo">Feature Modules</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
-          {moduleCards.map((m) => (
-            <Link key={m.url} to={m.url}>
-              <Card className="card-premium border-0 hover:border-primary/30 cursor-pointer h-full">
-                <CardContent className="p-4 flex flex-col items-center text-center gap-2.5">
-                  <div className="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <m.icon className="h-5 w-5 text-primary" />
-                  </div>
-                  <p className="text-xs font-semibold leading-tight">{m.title}</p>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
-        </div>
-      </div>
-
       {/* Dept Budget vs Actual */}
       <Card className="card-premium border-0">
         <CardHeader className="pb-2">
@@ -213,8 +180,8 @@ export default function Index() {
             <BarChart data={departmentSpend} layout="vertical" barCategoryGap="25%">
               <defs>
                 <linearGradient id="budgetGrad" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stopColor="hsl(153, 99%, 35%)" />
-                  <stop offset="100%" stopColor="hsl(174, 72%, 40%)" />
+                  <stop offset="0%" stopColor="hsl(177, 55%, 39%)" />
+                  <stop offset="100%" stopColor="hsl(177, 55%, 44%)" />
                 </linearGradient>
                 <linearGradient id="actualGrad" x1="0" y1="0" x2="1" y2="0">
                   <stop offset="0%" stopColor="hsl(353, 33%, 58%)" />
@@ -222,8 +189,8 @@ export default function Index() {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(210, 7%, 90%)" horizontal={false} />
-              <XAxis type="number" fontSize={12} tickFormatter={(v) => `$${v / 1e6}M`} stroke="hsl(210, 7%, 56%)" tickLine={false} axisLine={false} />
-              <YAxis dataKey="department" type="category" fontSize={12} width={90} stroke="hsl(210, 7%, 56%)" tickLine={false} axisLine={false} />
+              <XAxis type="number" fontSize={12} tickFormatter={(v) => `$${v / 1e6}M`} stroke="hsl(210, 7%, 46%)" tickLine={false} axisLine={false} />
+              <YAxis dataKey="department" type="category" fontSize={12} width={90} stroke="hsl(210, 7%, 46%)" tickLine={false} axisLine={false} />
               <Tooltip
                 formatter={(v: number) => `$${(v / 1e6).toFixed(2)}M`}
                 contentStyle={{ borderRadius: "10px", border: "none", boxShadow: "0 8px 24px -4px rgba(0,0,0,0.12)" }}

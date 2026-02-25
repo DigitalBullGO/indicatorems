@@ -99,11 +99,11 @@ export const kpiData = {
 
 // ─── CHART DATA ───
 export const spendByCommodity = [
-  { name: "Passives", value: 245000, fill: "hsl(153, 100%, 31%)" },
-  { name: "ICs", value: 520000, fill: "hsl(200, 80%, 50%)" },
-  { name: "Power", value: 180000, fill: "hsl(45, 100%, 55%)" },
-  { name: "Connectors", value: 95000, fill: "hsl(280, 60%, 55%)" },
-  { name: "PCBs", value: 310000, fill: "hsl(10, 80%, 55%)" },
+  { name: "Passives", value: 245000, fill: "hsl(177, 55%, 39%)" },
+  { name: "ICs", value: 520000, fill: "hsl(232, 48%, 48%)" },
+  { name: "Power", value: 180000, fill: "hsl(45, 100%, 50%)" },
+  { name: "Connectors", value: 95000, fill: "hsl(353, 33%, 58%)" },
+  { name: "PCBs", value: 310000, fill: "hsl(210, 7%, 46%)" },
 ];
 
 export const monthlyRevenue = [
