@@ -1,49 +1,72 @@
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { useState, useMemo } from "react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Library, Download, Copy, Eye, Search, FileSpreadsheet, Star } from "lucide-react";
-import { templateCategories } from "@/data/mockData";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import {
+  Library, Download, Copy, Eye, Search, FileSpreadsheet, Star,
+  Sparkles, FileText, ShoppingCart, Microscope, Factory
+} from "lucide-react";
+import {
+  aiPromptTemplates,
+  businessCommTemplates,
+  reportTemplates,
+  type AIPromptTemplate,
+  type BusinessCommTemplate,
+  type ReportTemplate,
+} from "@/data/templateData";
+import AIPromptModal from "@/components/templates/AIPromptModal";
+import BusinessCommModal from "@/components/templates/BusinessCommModal";
+import ReportModal from "@/components/templates/ReportModal";
 
-const templates = [
-  { id: "t1", name: "ISTVON Vendor Onboarding", category: "istvon", downloads: 234, premium: false },
-  { id: "t2", name: "Commodity Group Mapping", category: "commodity", downloads: 189, premium: false },
-  { id: "t3", name: "Standard BOM Input Sheet", category: "bom-input", downloads: 312, premium: false },
-  { id: "t4", name: "RFQ Request Form", category: "rfq-input", downloads: 156, premium: false },
-  { id: "t5", name: "Supplier Line Card", category: "line-card", downloads: 98, premium: false },
-  { id: "t6", name: "Material Pricing Model", category: "premium", downloads: 67, premium: true },
-  { id: "t7", name: "Surface Finish Calculator", category: "premium", downloads: 45, premium: true },
-  { id: "t8", name: "Machine Hour Rate Sheet", category: "premium", downloads: 89, premium: true },
-  { id: "t9", name: "Multi-level BOM Template", category: "bom-input", downloads: 278, premium: false },
-  { id: "t10", name: "Commodity Spend Tracker", category: "commodity", downloads: 205, premium: false },
-  { id: "t11", name: "Vendor Scorecard Template", category: "istvon", downloads: 167, premium: false },
-  { id: "t12", name: "Quote Comparison Matrix", category: "rfq-input", downloads: 143, premium: false },
+// Section headers
+const aiSections = [
+  { key: "sourcing" as const, label: "Sourcing & Procurement", icon: ShoppingCart },
+  { key: "quality" as const, label: "Quality", icon: Microscope },
+  { key: "production" as const, label: "Production", icon: Factory },
+];
+
+const commSections = [
+  { key: "vendor" as const, label: "Vendor Communication" },
+  { key: "customer" as const, label: "Customer Communication" },
+  { key: "internal" as const, label: "Internal Communication" },
+];
+
+const reportSections = [
+  { key: "inputs" as const, label: "Sourcing Inputs & Calculators", icon: "📁" },
+  { key: "dynamic" as const, label: "Sourcing Reports (Dynamic)", icon: "📊" },
 ];
 
 export default function Templates() {
-  const [selectedCategory, setSelectedCategory] = useState("all");
   const [search, setSearch] = useState("");
+  const [selectedAI, setSelectedAI] = useState<AIPromptTemplate | null>(null);
+  const [selectedComm, setSelectedComm] = useState<BusinessCommTemplate | null>(null);
+  const [selectedReport, setSelectedReport] = useState<ReportTemplate | null>(null);
 
-  const filtered = templates.filter(
-    (t) => (selectedCategory === "all" || t.category === selectedCategory) && t.name.toLowerCase().includes(search.toLowerCase())
+  const q = search.toLowerCase();
+
+  const filteredAI = useMemo(
+    () => aiPromptTemplates.filter((t) => t.title.toLowerCase().includes(q) || t.subtitle.toLowerCase().includes(q)),
+    [q]
+  );
+  const filteredComm = useMemo(
+    () => businessCommTemplates.filter((t) => t.title.toLowerCase().includes(q) || t.subtitle.toLowerCase().includes(q)),
+    [q]
+  );
+  const filteredReports = useMemo(
+    () => reportTemplates.filter((t) => t.title.toLowerCase().includes(q) || t.subtitle.toLowerCase().includes(q)),
+    [q]
   );
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold flex items-center gap-2 text-indigo"><Library className="h-6 w-6 text-primary" />Template Library</h1>
+        <h1 className="text-2xl font-bold flex items-center gap-2">
+          <Library className="h-6 w-6 text-primary" />
+          Template Library
+        </h1>
         <p className="text-sm font-semibold text-muted-foreground">Browse and use pre-built report templates.</p>
-      </div>
-
-      {/* Category Chips */}
-      <div className="flex gap-2 flex-wrap">
-        <Button variant={selectedCategory === "all" ? "default" : "outline"} size="sm" onClick={() => setSelectedCategory("all")}>All ({templates.length})</Button>
-        {templateCategories.map((c) => (
-          <Button key={c.id} variant={selectedCategory === c.id ? "default" : "outline"} size="sm" onClick={() => setSelectedCategory(c.id)}>
-            {c.name} ({c.count})
-          </Button>
-        ))}
       </div>
 
       {/* Search */}
@@ -52,31 +75,183 @@ export default function Templates() {
         <Input placeholder="Search templates…" className="pl-9" value={search} onChange={(e) => setSearch(e.target.value)} />
       </div>
 
-      {/* Gallery */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {filtered.map((t) => (
-          <Card key={t.id} className="hover:border-primary/40 hover:shadow-md transition-all shadow-sm">
-            <CardContent className="p-0">
-              {/* Preview Thumbnail */}
-              <div className="h-32 bg-muted/50 rounded-t-lg flex items-center justify-center relative">
-                <FileSpreadsheet className="h-10 w-10 text-muted-foreground/30" />
-                {t.premium && (
-                  <Badge className="absolute top-2 right-2 bg-amber text-amber-foreground gap-1"><Star className="h-3 w-3" />Premium</Badge>
-                )}
-              </div>
-              <div className="p-4">
-                <p className="font-medium text-sm">{t.name}</p>
-                <p className="text-xs text-muted-foreground mt-1">{t.downloads} downloads</p>
-                <div className="flex gap-2 mt-3">
-                  <Button variant="outline" size="sm" className="text-xs gap-1 flex-1"><Download className="h-3 w-3" />Download</Button>
-                  <Button variant="ghost" size="sm" className="text-xs gap-1"><Copy className="h-3 w-3" /></Button>
-                  <Button variant="ghost" size="sm" className="text-xs gap-1"><Eye className="h-3 w-3" /></Button>
+      {/* Tabs */}
+      <Tabs defaultValue="ai-prompts" className="space-y-6">
+        <TabsList className="h-11">
+          <TabsTrigger value="ai-prompts" className="gap-1.5 text-sm">
+            <Sparkles className="h-4 w-4" /> AI Prompt Templates
+          </TabsTrigger>
+          <TabsTrigger value="business-comm" className="gap-1.5 text-sm">
+            <FileText className="h-4 w-4" /> Business Communication
+          </TabsTrigger>
+          <TabsTrigger value="reports" className="gap-1.5 text-sm">
+            <FileSpreadsheet className="h-4 w-4" /> Report Templates
+          </TabsTrigger>
+        </TabsList>
+
+        {/* ── TAB 1: AI Prompt Templates ── */}
+        <TabsContent value="ai-prompts" className="space-y-8">
+          {aiSections.map((section) => {
+            const items = filteredAI.filter((t) => t.section === section.key);
+            if (items.length === 0) return null;
+            return (
+              <div key={section.key}>
+                <h2 className="text-base font-bold flex items-center gap-2 mb-4">
+                  <section.icon className="h-5 w-5 text-primary" />
+                  {section.label}
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {items.map((t) => (
+                    <TemplateCard
+                      key={t.id}
+                      title={t.title}
+                      subtitle={t.subtitle}
+                      downloads={t.downloads}
+                      actionLabel="Use Template"
+                      actionIcon={<Sparkles className="h-3 w-3" />}
+                      onAction={() => setSelectedAI(t)}
+                    />
+                  ))}
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+            );
+          })}
+          {filteredAI.length === 0 && <EmptyState />}
+        </TabsContent>
+
+        {/* ── TAB 2: Business Communication ── */}
+        <TabsContent value="business-comm" className="space-y-8">
+          {commSections.map((section) => {
+            const items = filteredComm.filter((t) => t.section === section.key);
+            if (items.length === 0) return null;
+            return (
+              <div key={section.key}>
+                <h2 className="text-base font-bold flex items-center gap-2 mb-4">
+                  <FileText className="h-5 w-5 text-indigo" />
+                  {section.label}
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {items.map((t) => (
+                    <TemplateCard
+                      key={t.id}
+                      title={t.title}
+                      subtitle={t.subtitle}
+                      downloads={t.downloads}
+                      actionLabel="Open Template"
+                      actionIcon={<FileText className="h-3 w-3" />}
+                      onAction={() => setSelectedComm(t)}
+                    />
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+          {filteredComm.length === 0 && <EmptyState />}
+        </TabsContent>
+
+        {/* ── TAB 3: Report Templates ── */}
+        <TabsContent value="reports" className="space-y-8">
+          {reportSections.map((section) => {
+            const items = filteredReports.filter((t) => t.section === section.key);
+            if (items.length === 0) return null;
+            return (
+              <div key={section.key}>
+                <h2 className="text-base font-bold flex items-center gap-2 mb-4">
+                  <span>{section.icon}</span>
+                  {section.label}
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {items.map((t) => (
+                    <TemplateCard
+                      key={t.id}
+                      title={t.title}
+                      subtitle={t.subtitle}
+                      downloads={t.downloads}
+                      premium={t.premium}
+                      isNew={t.isNew}
+                      actionLabel={t.section === "dynamic" ? "Generate Report" : "Download"}
+                      actionIcon={<Download className="h-3 w-3" />}
+                      onAction={() => setSelectedReport(t)}
+                    />
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+          {filteredReports.length === 0 && <EmptyState />}
+        </TabsContent>
+      </Tabs>
+
+      {/* Modals */}
+      <AIPromptModal template={selectedAI} open={!!selectedAI} onOpenChange={(o) => !o && setSelectedAI(null)} />
+      <BusinessCommModal template={selectedComm} open={!!selectedComm} onOpenChange={(o) => !o && setSelectedComm(null)} />
+      <ReportModal template={selectedReport} open={!!selectedReport} onOpenChange={(o) => !o && setSelectedReport(null)} />
+    </div>
+  );
+}
+
+// ─── Shared Card Component ───
+function TemplateCard({
+  title,
+  subtitle,
+  downloads,
+  premium,
+  isNew,
+  actionLabel,
+  actionIcon,
+  onAction,
+}: {
+  title: string;
+  subtitle: string;
+  downloads: number;
+  premium?: boolean;
+  isNew?: boolean;
+  actionLabel: string;
+  actionIcon: React.ReactNode;
+  onAction: () => void;
+}) {
+  return (
+    <Card className="hover:border-primary/40 hover:shadow-md transition-all shadow-sm">
+      <CardContent className="p-0">
+        {/* Preview Thumbnail */}
+        <div className="h-28 bg-muted/50 rounded-t-lg flex items-center justify-center relative">
+          <FileSpreadsheet className="h-10 w-10 text-muted-foreground/30" />
+          {premium && (
+            <Badge className="absolute top-2 right-2 bg-amber text-amber-foreground gap-1">
+              <Star className="h-3 w-3" />Premium
+            </Badge>
+          )}
+          {isNew && (
+            <Badge className="absolute top-2 right-2 bg-primary text-primary-foreground gap-1">New</Badge>
+          )}
+        </div>
+        <div className="p-4">
+          <p className="font-semibold text-sm leading-tight">{title}</p>
+          <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{subtitle}</p>
+          <p className="text-xs text-muted-foreground mt-1.5">{downloads} downloads</p>
+          <div className="flex gap-2 mt-3">
+            <Button size="sm" className="text-xs gap-1 flex-1" onClick={onAction}>
+              {actionIcon}
+              {actionLabel}
+            </Button>
+            <Button variant="ghost" size="sm" className="text-xs gap-1">
+              <Copy className="h-3 w-3" />
+            </Button>
+            <Button variant="ghost" size="sm" className="text-xs gap-1">
+              <Eye className="h-3 w-3" />
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function EmptyState() {
+  return (
+    <div className="text-center py-12 text-muted-foreground">
+      <Search className="h-10 w-10 mx-auto mb-3 opacity-30" />
+      <p className="text-sm">No templates match your search.</p>
     </div>
   );
 }
