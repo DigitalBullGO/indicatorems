@@ -8,7 +8,13 @@ import { FileText, TrendingUp, Search, BarChart3, Download, Eye } from "lucide-r
 import { reportTypes, spendByCommodity, monthlyRevenue } from "@/data/mockData";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 
-const COLORS = ["hsl(153,100%,31%)", "hsl(200,80%,50%)", "hsl(45,100%,55%)", "hsl(280,60%,55%)", "hsl(10,80%,55%)"];
+const COLORS = [
+  "hsl(153, 99%, 31%)",
+  "hsl(232, 48%, 48%)",
+  "hsl(45, 100%, 50%)",
+  "hsl(353, 33%, 58%)",
+  "hsl(210, 7%, 46%)",
+];
 
 export default function Reports() {
   const [filter, setFilter] = useState("all");
@@ -22,16 +28,16 @@ export default function Reports() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold flex items-center gap-2"><FileText className="h-6 w-6 text-primary" />Pre-Engineered Reports</h1>
+        <h1 className="text-2xl font-bold flex items-center gap-2 text-indigo"><FileText className="h-6 w-6 text-primary" />Pre-Engineered Reports</h1>
         <p className="text-muted-foreground">One-click access to 20+ standard manufacturing reports.</p>
       </div>
 
       {/* Trending */}
       <div>
-        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-1"><TrendingUp className="h-4 w-4" />Trending Reports</h2>
+        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-1"><TrendingUp className="h-4 w-4 text-primary" />Trending Reports</h2>
         <div className="flex gap-2 flex-wrap">
           {trending.map((r) => (
-            <Button key={r.id} variant="outline" size="sm" className="gap-1 text-xs" onClick={() => setSelectedReport(r.id)}>
+            <Button key={r.id} variant="outline" size="sm" className="gap-1 text-xs hover:border-primary/40" onClick={() => setSelectedReport(r.id)}>
               <BarChart3 className="h-3 w-3 text-primary" />{r.name}
               <Badge variant="secondary" className="ml-1 text-[10px]">{r.usageCount}</Badge>
             </Button>
@@ -57,7 +63,7 @@ export default function Reports() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
           {filtered.map((r) => (
-            <Card key={r.id} className={`cursor-pointer hover:border-primary/40 transition-all ${selectedReport === r.id ? "border-primary ring-1 ring-primary/20" : ""}`} onClick={() => setSelectedReport(r.id)}>
+            <Card key={r.id} className={`cursor-pointer hover:border-primary/40 hover:shadow-md transition-all shadow-sm ${selectedReport === r.id ? "border-primary ring-1 ring-primary/20" : ""}`} onClick={() => setSelectedReport(r.id)}>
               <CardContent className="p-4">
                 <div className="flex items-start justify-between">
                   <div>
@@ -78,14 +84,14 @@ export default function Reports() {
         </div>
 
         {/* Preview Panel */}
-        <Card className="h-fit">
-          <CardHeader className="pb-2"><CardTitle className="text-base">Report Preview</CardTitle></CardHeader>
+        <Card className="h-fit shadow-sm">
+          <CardHeader className="pb-2"><CardTitle className="text-base text-indigo">Report Preview</CardTitle></CardHeader>
           <CardContent>
             {selectedReport === "spend-analysis" ? (
               <ResponsiveContainer width="100%" height={200}>
                 <PieChart>
                   <Pie data={spendByCommodity} cx="50%" cy="50%" innerRadius={40} outerRadius={70} dataKey="value" nameKey="name">
-                    {spendByCommodity.map((_, i) => <Cell key={i} fill={COLORS[i]} />)}
+                    {spendByCommodity.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
                   </Pie>
                   <Tooltip formatter={(v: number) => `$${(v / 1000).toFixed(0)}K`} />
                 </PieChart>
@@ -93,11 +99,11 @@ export default function Reports() {
             ) : selectedReport ? (
               <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={monthlyRevenue.slice(0, 4)}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(0,0%,90%)" />
-                  <XAxis dataKey="month" fontSize={11} />
-                  <YAxis fontSize={11} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(210, 7%, 88%)" />
+                  <XAxis dataKey="month" fontSize={11} stroke="hsl(210, 7%, 46%)" />
+                  <YAxis fontSize={11} stroke="hsl(210, 7%, 46%)" />
                   <Tooltip />
-                  <Bar dataKey="revenue" fill="hsl(153,100%,31%)" radius={[3,3,0,0]} />
+                  <Bar dataKey="revenue" fill="hsl(153, 99%, 31%)" radius={[3,3,0,0]} />
                 </BarChart>
               </ResponsiveContainer>
             ) : (

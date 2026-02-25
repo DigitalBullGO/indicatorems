@@ -108,7 +108,7 @@ export default function AppLayout() {
         {/* Header */}
         <header className="flex h-16 shrink-0 items-center justify-between border-b bg-card px-6">
           <div className="flex items-center gap-4">
-            <h1 className="text-lg font-semibold text-foreground hidden md:block">
+            <h1 className="text-lg font-semibold text-indigo hidden md:block">
               SOTA Custom Reporting Tool
             </h1>
             <div className="relative hidden sm:block">
@@ -139,7 +139,7 @@ export default function AppLayout() {
             {/* Notifications */}
             <Button variant="ghost" size="icon" className="relative">
               <Bell className="h-4 w-4" />
-              <Badge className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-[10px]">
+              <Badge className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-[10px] bg-amber text-amber-foreground">
                 3
               </Badge>
             </Button>

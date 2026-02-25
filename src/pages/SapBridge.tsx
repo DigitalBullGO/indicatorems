@@ -19,12 +19,12 @@ export default function SapBridge() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold flex items-center gap-2"><Plug className="h-6 w-6 text-primary" /> AI Bridge for SAP</h1>
+        <h1 className="text-2xl font-bold flex items-center gap-2 text-indigo"><Plug className="h-6 w-6 text-primary" /> AI Bridge for SAP</h1>
         <p className="text-muted-foreground">Integrate and sync data from SAP ERP systems.</p>
       </div>
 
       {/* Connection Status */}
-      <Card>
+      <Card className="shadow-sm">
         <CardContent className="p-5 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className={`h-12 w-12 rounded-lg flex items-center justify-center ${connected ? "bg-primary/10" : "bg-destructive/10"}`}>
@@ -51,13 +51,13 @@ export default function SapBridge() {
       {/* Predictive Alerts */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {alerts.map((a, i) => (
-          <Card key={i} className={a.level === "critical" ? "border-destructive/30" : ""}>
+          <Card key={i} className={`shadow-sm ${a.level === "critical" ? "border-destructive/30" : a.level === "warning" ? "border-amber/30" : ""}`}>
             <CardContent className="p-4 flex flex-col gap-2">
               <div className="flex items-center gap-2">
                 {a.level === "critical" && <AlertTriangle className="h-4 w-4 text-destructive" />}
-                {a.level === "warning" && <Clock className="h-4 w-4 text-chart-3" />}
+                {a.level === "warning" && <Clock className="h-4 w-4 text-amber" />}
                 {a.level === "info" && <CheckCircle2 className="h-4 w-4 text-primary" />}
-                <Badge variant={a.level === "critical" ? "destructive" : "outline"} className="text-xs">{a.level}</Badge>
+                <Badge variant={a.level === "critical" ? "destructive" : "outline"} className={a.level === "warning" ? "border-amber/40 text-amber" : ""}>{a.level}</Badge>
               </div>
               <p className="text-sm">{a.message}</p>
               <Button variant="ghost" size="sm" className="w-fit text-xs gap-1">{a.action} <ArrowRight className="h-3 w-3" /></Button>
@@ -67,8 +67,8 @@ export default function SapBridge() {
       </div>
 
       {/* Table Browser */}
-      <Card>
-        <CardHeader className="pb-2"><CardTitle className="text-base">SAP Table Browser</CardTitle></CardHeader>
+      <Card className="shadow-sm">
+        <CardHeader className="pb-2"><CardTitle className="text-base text-indigo">SAP Table Browser</CardTitle></CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
@@ -79,7 +79,7 @@ export default function SapBridge() {
             </TableHeader>
             <TableBody>
               {sapTables.map((t) => (
-                <TableRow key={t.name}>
+                <TableRow key={t.name} className="hover:bg-primary/5">
                   <TableCell className="font-mono font-medium">{t.name}</TableCell>
                   <TableCell>{t.description}</TableCell>
                   <TableCell>{t.records.toLocaleString()}</TableCell>

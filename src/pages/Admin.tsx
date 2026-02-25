@@ -21,7 +21,7 @@ export default function Admin() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold flex items-center gap-2"><Settings className="h-6 w-6 text-primary" />Admin Panel</h1>
+        <h1 className="text-2xl font-bold flex items-center gap-2 text-indigo"><Settings className="h-6 w-6 text-primary" />Admin Panel</h1>
         <p className="text-muted-foreground">Manage platform settings, agents, and master data.</p>
       </div>
 
@@ -37,7 +37,7 @@ export default function Admin() {
         {/* AGENTS */}
         <TabsContent value="agents" className="space-y-4">
           {agentStates.map((agent) => (
-            <Card key={agent.id}>
+            <Card key={agent.id} className="shadow-sm hover:shadow-md transition-shadow">
               <CardContent className="p-4 flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${agent.enabled ? "bg-primary/10" : "bg-muted"}`}>
@@ -64,12 +64,12 @@ export default function Admin() {
         <TabsContent value="master" className="space-y-4">
           <div className="flex gap-2 flex-wrap mb-4">
             {["Customers", "Suppliers", "Commodities", "Manufacturers", "Departments"].map((tab) => (
-              <Badge key={tab} variant="outline" className="cursor-pointer hover:bg-accent">{tab}</Badge>
+              <Badge key={tab} variant="outline" className="cursor-pointer hover:bg-primary/5 hover:border-primary/30 transition-colors">{tab}</Badge>
             ))}
           </div>
-          <Card>
+          <Card className="shadow-sm">
             <CardHeader className="pb-2 flex flex-row items-center justify-between">
-              <CardTitle className="text-base">Customers</CardTitle>
+              <CardTitle className="text-base text-indigo">Customers</CardTitle>
               <Button size="sm" className="gap-1"><Plus className="h-3.5 w-3.5" />Add</Button>
             </CardHeader>
             <CardContent>
@@ -79,7 +79,7 @@ export default function Admin() {
                 </TableHeader>
                 <TableBody>
                   {customers.map((c) => (
-                    <TableRow key={c.id}>
+                    <TableRow key={c.id} className="hover:bg-primary/5">
                       <TableCell className="font-mono text-xs">{c.id}</TableCell>
                       <TableCell className="font-medium">{c.name}</TableCell>
                       <TableCell><Badge variant="outline">{c.region}</Badge></TableCell>
@@ -87,7 +87,7 @@ export default function Admin() {
                       <TableCell>{c.orders}</TableCell>
                       <TableCell className="flex gap-1">
                         <Button variant="ghost" size="icon" className="h-7 w-7"><Edit className="h-3 w-3" /></Button>
-                        <Button variant="ghost" size="icon" className="h-7 w-7"><Trash2 className="h-3 w-3" /></Button>
+                        <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive"><Trash2 className="h-3 w-3" /></Button>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -99,8 +99,8 @@ export default function Admin() {
 
         {/* SCHEMA */}
         <TabsContent value="schema" className="space-y-4">
-          <Card>
-            <CardHeader className="pb-2"><CardTitle className="text-base">Schema Mappings</CardTitle></CardHeader>
+          <Card className="shadow-sm">
+            <CardHeader className="pb-2"><CardTitle className="text-base text-indigo">Schema Mappings</CardTitle></CardHeader>
             <CardContent>
               <Table>
                 <TableHeader>
@@ -114,7 +114,7 @@ export default function Admin() {
                     { field: "Lead Time", type: "number", source: "SAP EKPO", mapped: "components.leadTime" },
                     { field: "MOQ", type: "number", source: "Manual", mapped: "components.moq" },
                   ].map((s) => (
-                    <TableRow key={s.field}>
+                    <TableRow key={s.field} className="hover:bg-primary/5">
                       <TableCell className="font-medium">{s.field}</TableCell>
                       <TableCell><Badge variant="outline" className="text-xs">{s.type}</Badge></TableCell>
                       <TableCell>{s.source}</TableCell>
@@ -129,9 +129,9 @@ export default function Admin() {
 
         {/* USERS */}
         <TabsContent value="users" className="space-y-4">
-          <Card>
+          <Card className="shadow-sm">
             <CardHeader className="pb-2 flex flex-row items-center justify-between">
-              <CardTitle className="text-base">Users & Roles</CardTitle>
+              <CardTitle className="text-base text-indigo">Users & Roles</CardTitle>
               <Button size="sm" className="gap-1"><Plus className="h-3.5 w-3.5" />Invite User</Button>
             </CardHeader>
             <CardContent>
@@ -141,7 +141,7 @@ export default function Admin() {
                 </TableHeader>
                 <TableBody>
                   {mockUsers.map((u) => (
-                    <TableRow key={u.id}>
+                    <TableRow key={u.id} className="hover:bg-primary/5">
                       <TableCell className="font-medium">{u.name}</TableCell>
                       <TableCell>{u.email}</TableCell>
                       <TableCell>
@@ -154,7 +154,7 @@ export default function Admin() {
                           </SelectContent>
                         </Select>
                       </TableCell>
-                      <TableCell><Button variant="ghost" size="icon" className="h-7 w-7"><Trash2 className="h-3 w-3" /></Button></TableCell>
+                      <TableCell><Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive"><Trash2 className="h-3 w-3" /></Button></TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -166,21 +166,33 @@ export default function Admin() {
         {/* SETTINGS */}
         <TabsContent value="settings" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card>
-              <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><Palette className="h-4 w-4" />Brand Colors</CardTitle></CardHeader>
+            <Card className="shadow-sm">
+              <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2 text-indigo"><Palette className="h-4 w-4 text-primary" />Brand Colors</CardTitle></CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex items-center gap-3">
                   <div className="h-8 w-8 rounded-md bg-primary" />
-                  <div><Label className="text-xs">Primary</Label><p className="text-xs text-muted-foreground">#019e4e</p></div>
+                  <div><Label className="text-xs">Indic Green</Label><p className="text-xs text-muted-foreground">#019E4E</p></div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-md bg-foreground" />
-                  <div><Label className="text-xs">Secondary</Label><p className="text-xs text-muted-foreground">#000000</p></div>
+                  <div className="h-8 w-8 rounded-md bg-amber" />
+                  <div><Label className="text-xs">Amber Gold</Label><p className="text-xs text-muted-foreground">#FFBF00</p></div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="h-8 w-8 rounded-md bg-indigo" />
+                  <div><Label className="text-xs">Deep Indigo</Label><p className="text-xs text-muted-foreground">#3F51B5</p></div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="h-8 w-8 rounded-md bg-rose" />
+                  <div><Label className="text-xs">Dusty Rose</Label><p className="text-xs text-muted-foreground">#BC6E78</p></div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="h-8 w-8 rounded-md bg-gray" />
+                  <div><Label className="text-xs">Cool Gray</Label><p className="text-xs text-muted-foreground">#6C757D</p></div>
                 </div>
               </CardContent>
             </Card>
-            <Card>
-              <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><Bell className="h-4 w-4" />Notifications</CardTitle></CardHeader>
+            <Card className="shadow-sm">
+              <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2 text-indigo"><Bell className="h-4 w-4 text-amber" />Notifications</CardTitle></CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex items-center justify-between">
                   <Label className="text-sm">Email on sync failure</Label><Switch defaultChecked />

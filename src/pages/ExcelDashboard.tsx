@@ -17,7 +17,7 @@ const mockParsedData = [
 const pieData = [
   { name: "Passives", value: 2425 }, { name: "ICs", value: 8450 }, { name: "Power", value: 525 },
 ];
-const COLORS = ["hsl(153,100%,31%)", "hsl(200,80%,50%)", "hsl(45,100%,55%)"];
+const COLORS = ["hsl(153, 99%, 31%)", "hsl(232, 48%, 48%)", "hsl(45, 100%, 50%)"];
 
 export default function ExcelDashboard() {
   const [uploaded, setUploaded] = useState(false);
@@ -25,12 +25,12 @@ export default function ExcelDashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Excel to Dashboard</h1>
+        <h1 className="text-2xl font-bold text-indigo">Excel to Dashboard</h1>
         <p className="text-muted-foreground">Upload spreadsheets and auto-generate visual dashboards.</p>
       </div>
 
       {!uploaded ? (
-        <Card className="border-dashed border-2 border-primary/30">
+        <Card className="border-dashed border-2 border-primary/40">
           <CardContent className="py-16 flex flex-col items-center gap-4">
             <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
               <Upload className="h-8 w-8 text-primary" />
@@ -53,8 +53,8 @@ export default function ExcelDashboard() {
           </div>
 
           {/* Data Preview */}
-          <Card>
-            <CardHeader className="pb-2"><CardTitle className="text-base">Data Preview</CardTitle></CardHeader>
+          <Card className="shadow-sm">
+            <CardHeader className="pb-2"><CardTitle className="text-base text-indigo">Data Preview</CardTitle></CardHeader>
             <CardContent>
               <Table>
                 <TableHeader>
@@ -62,7 +62,7 @@ export default function ExcelDashboard() {
                 </TableHeader>
                 <TableBody>
                   {mockParsedData.map((row, i) => (
-                    <TableRow key={i}>
+                    <TableRow key={i} className="hover:bg-primary/5">
                       {Object.values(row).map((v, j) => <TableCell key={j}>{typeof v === "number" ? v.toLocaleString() : v}</TableCell>)}
                     </TableRow>
                   ))}
@@ -73,22 +73,22 @@ export default function ExcelDashboard() {
 
           {/* Auto Charts */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <Card>
-              <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><BarChart3 className="h-4 w-4 text-primary" />Cost by MPN</CardTitle></CardHeader>
+            <Card className="shadow-sm">
+              <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2 text-indigo"><BarChart3 className="h-4 w-4 text-primary" />Cost by MPN</CardTitle></CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={mockParsedData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(0,0%,90%)" />
-                    <XAxis dataKey="MPN" fontSize={11} />
-                    <YAxis fontSize={11} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(210, 7%, 88%)" />
+                    <XAxis dataKey="MPN" fontSize={11} stroke="hsl(210, 7%, 46%)" />
+                    <YAxis fontSize={11} stroke="hsl(210, 7%, 46%)" />
                     <Tooltip />
-                    <Bar dataKey="Cost" fill="hsl(153,100%,31%)" radius={[4,4,0,0]} />
+                    <Bar dataKey="Cost" fill="hsl(153, 99%, 31%)" radius={[4,4,0,0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>
             </Card>
-            <Card>
-              <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><PieIcon className="h-4 w-4 text-primary" />Spend by Commodity</CardTitle></CardHeader>
+            <Card className="shadow-sm">
+              <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2 text-indigo"><PieIcon className="h-4 w-4 text-primary" />Spend by Commodity</CardTitle></CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={250}>
                   <PieChart>
@@ -110,10 +110,10 @@ export default function ExcelDashboard() {
               { label: "Components", value: mockParsedData.length },
               { label: "Top Commodity", value: "ICs" },
             ].map((k) => (
-              <Card key={k.label}>
+              <Card key={k.label} className="shadow-sm">
                 <CardContent className="p-4 text-center">
                   <p className="text-xs text-muted-foreground uppercase">{k.label}</p>
-                  <p className="text-xl font-bold mt-1">{k.value}</p>
+                  <p className="text-xl font-bold mt-1 text-primary">{k.value}</p>
                 </CardContent>
               </Card>
             ))}
