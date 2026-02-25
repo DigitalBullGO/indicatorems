@@ -1,68 +1,52 @@
 
 
-## Plan: Dashboard, Pre-Engineered Reports & Template Library Updates
+## Plan: Update Pre-Engineered Report Previews to Match Report Content
 
-### 1. Dashboard (`src/pages/Index.tsx`)
+### Problem
+The 12 report previews in `src/pages/Reports.tsx` all show simple generic bar/pie charts with placeholder data. They don't reflect the actual content, structure, or KPIs that each report title implies. For example, "Commodity-wise Spend Analysis" should show spend breakdowns by type, top categories, and AI-identified opportunities — as demonstrated in the uploaded PDF template.
 
-**Remove Feature Modules** (lines 187-204): Delete the entire "Feature Modules" section including the `moduleCards` array (lines 15-23) since it's no longer needed.
+### Solution
+Replace the current simple chart previews with rich, executive-style preview panels that include:
+- **KPI summary cards** at the top (e.g., Total Spend, Supplier Count, Savings Identified)
+- **Data tables** with contextual columns matching the report topic
+- **A relevant chart** (pie, bar, or horizontal bar) where appropriate
+- **Actionable insights** or alerts section
 
-**Update chart color palette** to use the attached reference colors throughout:
-- Primary data: **Slate Teal** `rgb(45, 156, 150)` — bar fills, primary pie slices
-- Secondary/warning: **Amber Gold** `rgb(255, 191, 0)` — trend indicators, alerts
-- Labels/headings: **Deep Indigo** `rgb(63, 81, 181)` — already partially used
-- Comparisons: **Dusty Rose** `rgb(188, 110, 120)` — "Actual" bars, secondary series
-- Baseline/axes: **Cool Gray** `rgb(108, 117, 125)` — axis labels, grid lines
+### Report-by-Report Content Updates
 
-Specific changes:
-- `COLORS` array → replace with Slate Teal, Deep Indigo, Amber Gold, Dusty Rose, Cool Gray
-- Revenue bar gradient → Slate Teal gradient instead of green
-- Orders line → Deep Indigo
-- Pie chart cells → new 5-color palette
-- Budget vs Actual bars → Slate Teal for Budget, Dusty Rose for Actual
-- KPI trend arrows → keep logic but use Slate Teal for up, Amber Gold for down
+| Report ID | Title | Preview Content |
+|-----------|-------|----------------|
+| `spend-analysis` | Commodity-wise Spend Analysis | KPIs: Total Spend $142.5M, 1,420 Suppliers, 73% Direct. Table: Spend by Type (Direct Materials, Mfg Opex, Indirect). Pie chart by commodity. AI alerts (Maverick Spend, Consolidation). |
+| `bom-breakdown` | BOM & Component-Level Breakdown | KPIs: Total BOM Cost, Unique MPNs, Avg Lead Time. Table: Top components by cost contribution. Horizontal bar by commodity %. |
+| `supplier-scorecard` | Supplier Scorecard | KPIs: Avg OTD, Avg Quality, Suppliers Evaluated. Table: Supplier name, OTD%, Quality%, Lead Time, Rating. Grouped bar (OTD vs Quality). |
+| `lead-time-120` | MPNs Exceeding 120-Day Lead Time | KPIs: Parts >120d, Longest Lead Time, Avg Excess Days. Table: MPN, Description, Supplier, Lead Time, Risk Level. Bar chart by part. |
+| `inventory` | Inventory Status Report | KPIs: Total Units, Total Value, Low Stock Items. Table: Commodity, Units, Value, Turnover Rate. Bar chart by commodity value. |
+| `grn-pos` | GRN & PO Tracking | KPIs: Total POs, Received, Pending. Table: Month, Received, Pending, Variance. Stacked bar by month. |
+| `quality-yield` | Quality Yield Report | KPIs: Avg Yield, Best Line, Lines Below Target. Table: Line, Yield%, Defect Rate, Status. Bar chart by line. |
+| `aging-customer` | Aging Analysis — Customer | KPIs: Total Outstanding, >90d Amount, Collection Rate. Table: Aging bucket, Count, Amount, % of Total. Bar by aging bucket. |
+| `aging-supplier` | Aging Analysis — Supplier | KPIs: Total Payables, Overdue Amount, On-Time Payment %. Table: Aging bucket, Count, Amount. Bar by bucket. |
+| `customer-sales` | Customer-wise Sales | KPIs: Total Revenue, Top Region, Active Customers. Table: Region, Revenue, Orders, Avg Order Value. Bar by region. |
+| `org-drilldown` | Org/Dept/BOM-wise Drilldown | KPIs: Departments, Total Spend, Largest Dept. Table: Department, Budget, Actual, Variance. Horizontal bar. |
+| `iqc-report` | IQC Inspection Report | KPIs: Total Lots, Pass Rate, Rejections. Table: Line, Pass Rate%, Lots Inspected, Defects Found. Bar chart. |
 
----
+### Implementation Approach
 
-### 2. Pre-Engineered Reports (`src/pages/Reports.tsx`)
+1. **Expand `getReportPreview()`** — Each case returns a structured JSX block with:
+   - A row of 3 compact KPI cards (icon, value, label)
+   - A small data table (3-5 rows) with topic-specific columns
+   - The existing chart (kept but resized to ~140px height)
+   - For `spend-analysis`: add the AI alerts section matching the PDF format
 
-Update the report preview panel and report card content to be more meaningful and aligned with report titles. Currently all non-spend reports show a generic bar chart.
+2. **Increase preview panel height** — Change from `h-fit` to allow scrollable content with `max-h-[600px] overflow-y-auto`
 
-**Enhancements:**
-- Update chart colors to use the new palette (Slate Teal, Amber Gold, Deep Indigo, Dusty Rose, Cool Gray)
-- Add report-specific preview data so each report shows contextually relevant sample data:
-  - `spend-analysis` → Pie chart (already exists, update colors)
-  - `bom-breakdown` → Horizontal bar by component type
-  - `supplier-scorecard` → Bar chart with OTD/Quality metrics
-  - `lead-time-120` → Bar chart showing lead time days
-  - Other reports → contextual bar charts with relevant mock data
-- Apply `card-premium` styling and the new color palette to the preview panel and report cards
-- Use Slate Teal as primary bar fill, Dusty Rose for comparison, Cool Gray for axes
+3. **Add helper components inline** — Small `KpiCard` and `DataRow` render helpers within the file for the structured layout
 
----
+4. **Update mock datasets** — Enrich existing datasets (e.g., `supplierScorecardData` add `leadTime` and `rating` fields, `inventoryData` add `turnover` field) to support the table views
 
-### 3. Template Library (`src/pages/Templates.tsx`)
+### Files to Modify
+- `src/pages/Reports.tsx` — Main changes: expand `getReportPreview()` with executive-style content for all 12 reports, add KPI cards and data tables, update preview panel sizing
 
-Assign a **distinct accent color** to each of the three tab categories, replacing the current uniform green/indigo:
-
-| Tab | Color | Hex | Usage |
-|-----|-------|-----|-------|
-| AI Prompts | Slate Teal | `rgb(45, 156, 150)` | Section icons, action buttons, card thumbnail bg tint |
-| Business Communication | Amber Gold | `rgb(255, 191, 0)` | Section icons, action buttons, card thumbnail bg tint |
-| Report Templates | Deep Indigo | `rgb(63, 81, 181)` | Section icons, action buttons, card thumbnail bg tint |
-
-**Implementation:**
-- Pass an `accentColor` prop to `TemplateCard` to style the thumbnail background tint, the action button, and the card's hover border color
-- Update section heading icon colors per category
-- The `FileSpreadsheet` icon in thumbnails gets tinted with the category color
-- Action buttons use the category color as background
-
----
-
-### Technical Details
-
-**Files to modify:**
-1. `src/pages/Index.tsx` — Remove Feature Modules block (lines 15-23, 187-204), update `COLORS` array and all gradient definitions to new palette
-2. `src/pages/Reports.tsx` — Update `COLORS`, add report-specific preview datasets, apply new palette to charts
-3. `src/pages/Templates.tsx` — Add color config per tab, pass accent color to `TemplateCard`, update section icon colors
-4. `src/data/mockData.ts` — Update `spendByCommodity` fill values to new palette colors (optional, if fills are hardcoded there)
+### No changes needed to:
+- `src/data/mockData.ts` — All additional data will be defined inline in Reports.tsx alongside existing preview datasets
+- Other files remain untouched
 
