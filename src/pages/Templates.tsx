@@ -19,6 +19,7 @@ import {
 import AIPromptModal from "@/components/templates/AIPromptModal";
 import BusinessCommModal from "@/components/templates/BusinessCommModal";
 import ReportModal from "@/components/templates/ReportModal";
+import ReportPreviewModal from "@/components/templates/ReportPreviewModal";
 
 // Section headers
 const aiSections = [
@@ -34,8 +35,8 @@ const commSections = [
 ];
 
 const reportSections = [
+  { key: "dynamic" as const, label: "Sourcing Reports", icon: "📊" },
   { key: "inputs" as const, label: "Sourcing Inputs & Calculators", icon: "📁" },
-  { key: "dynamic" as const, label: "Sourcing Reports (Dynamic)", icon: "📊" },
 ];
 
 export default function Templates() {
@@ -43,6 +44,7 @@ export default function Templates() {
   const [selectedAI, setSelectedAI] = useState<AIPromptTemplate | null>(null);
   const [selectedComm, setSelectedComm] = useState<BusinessCommTemplate | null>(null);
   const [selectedReport, setSelectedReport] = useState<ReportTemplate | null>(null);
+  const [previewReport, setPreviewReport] = useState<ReportTemplate | null>(null);
 
   const q = search.toLowerCase();
 
@@ -78,8 +80,8 @@ export default function Templates() {
       {/* Tabs */}
       <Tabs defaultValue="ai-prompts" className="space-y-6">
         <TabsList className="h-11">
-          <TabsTrigger value="ai-prompts" className="gap-1.5 text-sm">
-            <Sparkles className="h-4 w-4" /> AI Prompt Templates
+         <TabsTrigger value="ai-prompts" className="gap-1.5 text-sm">
+            <Sparkles className="h-4 w-4" /> AI Prompts
           </TabsTrigger>
           <TabsTrigger value="business-comm" className="gap-1.5 text-sm">
             <FileText className="h-4 w-4" /> Business Communication
@@ -172,6 +174,8 @@ export default function Templates() {
                       actionLabel={t.section === "dynamic" ? "Generate Report" : "Download"}
                       actionIcon={<Download className="h-3 w-3" />}
                       onAction={() => setSelectedReport(t)}
+                      showPreview={t.section === "dynamic"}
+                      onPreview={() => setPreviewReport(t)}
                     />
                   ))}
                 </div>
@@ -186,6 +190,7 @@ export default function Templates() {
       <AIPromptModal template={selectedAI} open={!!selectedAI} onOpenChange={(o) => !o && setSelectedAI(null)} />
       <BusinessCommModal template={selectedComm} open={!!selectedComm} onOpenChange={(o) => !o && setSelectedComm(null)} />
       <ReportModal template={selectedReport} open={!!selectedReport} onOpenChange={(o) => !o && setSelectedReport(null)} />
+      <ReportPreviewModal template={previewReport} open={!!previewReport} onOpenChange={(o) => !o && setPreviewReport(null)} />
     </div>
   );
 }
@@ -200,6 +205,8 @@ function TemplateCard({
   actionLabel,
   actionIcon,
   onAction,
+  showPreview,
+  onPreview,
 }: {
   title: string;
   subtitle: string;
@@ -209,6 +216,8 @@ function TemplateCard({
   actionLabel: string;
   actionIcon: React.ReactNode;
   onAction: () => void;
+  showPreview?: boolean;
+  onPreview?: () => void;
 }) {
   return (
     <Card className="hover:border-primary/40 hover:shadow-md transition-all shadow-sm">
@@ -237,9 +246,15 @@ function TemplateCard({
             <Button variant="ghost" size="sm" className="text-xs gap-1">
               <Copy className="h-3 w-3" />
             </Button>
-            <Button variant="ghost" size="sm" className="text-xs gap-1">
-              <Eye className="h-3 w-3" />
-            </Button>
+            {showPreview && onPreview ? (
+              <Button variant="ghost" size="sm" className="text-xs gap-1" onClick={onPreview}>
+                <Eye className="h-3 w-3" />
+              </Button>
+            ) : (
+              <Button variant="ghost" size="sm" className="text-xs gap-1">
+                <Eye className="h-3 w-3" />
+              </Button>
+            )}
           </div>
         </div>
       </CardContent>
