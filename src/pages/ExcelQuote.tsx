@@ -28,7 +28,7 @@ export default function ExcelQuote() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-indigo">Excel to Quote</h1>
-        <p className="text-muted-foreground">Transform BOMs into complete sales quotations.</p>
+        <p className="text-sm font-semibold text-muted-foreground">Transform BOMs into complete sales quotations.</p>
       </div>
 
       {/* Progress */}
@@ -110,9 +110,9 @@ export default function ExcelQuote() {
           <Card className="shadow-sm">
             <CardHeader className="pb-2"><CardTitle className="text-base text-indigo">Quote Summary</CardTitle></CardHeader>
             <CardContent className="space-y-3">
-              <div className="flex justify-between"><span className="text-muted-foreground">BOM Cost</span><span className="font-bold">${totalBomCost.toFixed(2)}</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Margin (25%)</span><span className="font-bold">${(totalBomCost * margin).toFixed(2)}</span></div>
-              <div className="border-t pt-2 flex justify-between"><span className="font-semibold">Quote Total</span><span className="text-xl font-bold text-primary">${quoteTotal.toFixed(2)}</span></div>
+              <div className="flex justify-between"><span className="text-sm font-semibold text-muted-foreground">BOM Cost</span><span className="font-bold">${totalBomCost.toFixed(2)}</span></div>
+              <div className="flex justify-between"><span className="text-sm font-semibold text-muted-foreground">Margin (25%)</span><span className="font-bold">${(totalBomCost * margin).toFixed(2)}</span></div>
+              <div className="border-t pt-2 flex justify-between"><span className="font-semibold">Quote Total</span><span className="text-xl font-bold text-foreground">${quoteTotal.toFixed(2)}</span></div>
               <div className="flex justify-between text-xs text-muted-foreground"><span>Max Lead Time</span><span>130 days (TUSB320IRWBR)</span></div>
             </CardContent>
           </Card>

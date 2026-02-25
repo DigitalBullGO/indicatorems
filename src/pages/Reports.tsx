@@ -29,7 +29,7 @@ export default function Reports() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold flex items-center gap-2 text-indigo"><FileText className="h-6 w-6 text-primary" />Pre-Engineered Reports</h1>
-        <p className="text-muted-foreground">One-click access to 20+ standard manufacturing reports.</p>
+        <p className="text-sm font-semibold text-muted-foreground">One-click access to 20+ standard manufacturing reports.</p>
       </div>
 
       {/* Trending */}

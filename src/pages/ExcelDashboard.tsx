@@ -26,7 +26,7 @@ export default function ExcelDashboard() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-indigo">Excel to Dashboard</h1>
-        <p className="text-muted-foreground">Upload spreadsheets and auto-generate visual dashboards.</p>
+        <p className="text-sm font-semibold text-muted-foreground">Upload spreadsheets and auto-generate visual dashboards.</p>
       </div>
 
       {!uploaded ? (
@@ -112,8 +112,8 @@ export default function ExcelDashboard() {
             ].map((k) => (
               <Card key={k.label} className="shadow-sm">
                 <CardContent className="p-4 text-center">
-                  <p className="text-xs text-muted-foreground uppercase">{k.label}</p>
-                  <p className="text-xl font-bold mt-1 text-primary">{k.value}</p>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase">{k.label}</p>
+                  <p className="text-xl font-bold mt-1 text-foreground">{k.value}</p>
                 </CardContent>
               </Card>
             ))}

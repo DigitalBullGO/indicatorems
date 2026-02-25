@@ -22,7 +22,7 @@ export default function Admin() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold flex items-center gap-2 text-indigo"><Settings className="h-6 w-6 text-primary" />Admin Panel</h1>
-        <p className="text-muted-foreground">Manage platform settings, agents, and master data.</p>
+        <p className="text-sm font-semibold text-muted-foreground">Manage platform settings, agents, and master data.</p>
       </div>
 
       <Tabs defaultValue="agents">
