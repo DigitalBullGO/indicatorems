@@ -69,26 +69,26 @@ export default function AiInsights() {
       {/* Chat */}
       <div className="flex-1 flex flex-col">
         <div className="mb-4">
-          <h1 className="text-2xl font-bold flex items-center gap-2"><Brain className="h-6 w-6 text-primary" /> AI Insights Pro</h1>
+          <h1 className="text-2xl font-bold flex items-center gap-2 text-indigo"><Brain className="h-6 w-6 text-primary" /> AI Insights Pro</h1>
           <p className="text-muted-foreground">Conversational AI for data analysis and actionable insights.</p>
         </div>
 
-        <Card className="flex-1 flex flex-col">
+        <Card className="flex-1 flex flex-col shadow-sm">
           <ScrollArea className="flex-1 p-4">
             <div className="space-y-4">
               {messages.map((msg, i) => (
                 <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-                  <div className={`max-w-[80%] rounded-lg p-3 text-sm ${msg.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
+                  <div className={`max-w-[80%] rounded-lg p-3 text-sm ${msg.role === "user" ? "bg-indigo text-indigo-foreground" : "bg-muted"}`}>
                     <p className="whitespace-pre-wrap">{msg.content}</p>
                     {msg.chart && (
                       <div className="mt-3 bg-card rounded-md p-2">
                         <ResponsiveContainer width="100%" height={180}>
                           <BarChart data={msg.chart.data}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="hsl(0,0%,90%)" />
-                            <XAxis dataKey="name" fontSize={10} />
-                            <YAxis fontSize={10} tickFormatter={(v) => `$${v / 1000}K`} />
+                            <CartesianGrid strokeDasharray="3 3" stroke="hsl(210, 7%, 88%)" />
+                            <XAxis dataKey="name" fontSize={10} stroke="hsl(210, 7%, 46%)" />
+                            <YAxis fontSize={10} tickFormatter={(v) => `$${v / 1000}K`} stroke="hsl(210, 7%, 46%)" />
                             <Tooltip formatter={(v: number) => `$${(v / 1000).toFixed(0)}K`} />
-                            <Bar dataKey="value" fill="hsl(153,100%,31%)" radius={[3,3,0,0]} />
+                            <Bar dataKey="value" fill="hsl(153, 99%, 31%)" radius={[3,3,0,0]} />
                           </BarChart>
                         </ResponsiveContainer>
                       </div>
@@ -123,10 +123,10 @@ export default function AiInsights() {
 
       {/* Sidebar Panels */}
       <div className="w-72 hidden lg:flex flex-col gap-4">
-        <Card>
-          <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-destructive" />Anomalies</CardTitle></CardHeader>
+        <Card className="shadow-sm">
+          <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-amber" />Anomalies</CardTitle></CardHeader>
           <CardContent className="space-y-2 text-xs">
-            <div className="p-2 rounded bg-destructive/10 border border-destructive/20">
+            <div className="p-2 rounded bg-amber/10 border border-amber/20">
               <p className="font-medium">TUSB320IRWBR — 130d lead time</p>
               <p className="text-muted-foreground">Exceeds 120-day threshold</p>
             </div>
@@ -136,7 +136,7 @@ export default function AiInsights() {
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="shadow-sm">
           <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2"><TrendingUp className="h-4 w-4 text-primary" />Trends</CardTitle></CardHeader>
           <CardContent className="space-y-2 text-xs">
             <div className="p-2 rounded bg-primary/5 border border-primary/20">

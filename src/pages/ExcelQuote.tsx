@@ -27,12 +27,12 @@ export default function ExcelQuote() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Excel to Quote</h1>
+        <h1 className="text-2xl font-bold text-indigo">Excel to Quote</h1>
         <p className="text-muted-foreground">Transform BOMs into complete sales quotations.</p>
       </div>
 
       {/* Progress */}
-      <Card>
+      <Card className="shadow-sm">
         <CardContent className="p-4">
           <div className="flex items-center justify-between mb-3">
             {steps.map((s, i) => (
@@ -51,7 +51,7 @@ export default function ExcelQuote() {
 
       {/* Step Content */}
       {currentStep === 1 && (
-        <Card className="border-dashed border-2 border-primary/30">
+        <Card className="border-dashed border-2 border-primary/40">
           <CardContent className="py-12 flex flex-col items-center gap-4">
             <FileSpreadsheet className="h-12 w-12 text-primary" />
             <p className="font-semibold">Upload BOM File</p>
@@ -61,8 +61,8 @@ export default function ExcelQuote() {
       )}
 
       {currentStep >= 2 && (
-        <Card>
-          <CardHeader className="pb-2"><CardTitle className="text-base">BOM Data — {sampleBOM.length} line items</CardTitle></CardHeader>
+        <Card className="shadow-sm">
+          <CardHeader className="pb-2"><CardTitle className="text-base text-indigo">BOM Data — {sampleBOM.length} line items</CardTitle></CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
@@ -73,7 +73,7 @@ export default function ExcelQuote() {
               </TableHeader>
               <TableBody>
                 {sampleBOM.map((b) => (
-                  <TableRow key={b.mpn}>
+                  <TableRow key={b.mpn} className="hover:bg-primary/5">
                     <TableCell className="font-mono text-xs">{b.mpn}</TableCell>
                     <TableCell>{b.description}</TableCell>
                     <TableCell>{b.qty}</TableCell>
@@ -81,7 +81,7 @@ export default function ExcelQuote() {
                     <TableCell className="font-medium">${(b.unitCost * b.qty).toFixed(2)}</TableCell>
                     <TableCell>{b.supplier}</TableCell>
                     <TableCell>
-                      <Badge variant={b.leadTime > 100 ? "destructive" : "outline"}>{b.leadTime}d</Badge>
+                      <Badge variant={b.leadTime > 100 ? "destructive" : "outline"} className={b.leadTime > 100 ? "" : ""}>{b.leadTime}d</Badge>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -93,22 +93,22 @@ export default function ExcelQuote() {
 
       {currentStep >= 3 && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <Card>
-            <CardHeader className="pb-2"><CardTitle className="text-base">Cost Breakdown</CardTitle></CardHeader>
+          <Card className="shadow-sm">
+            <CardHeader className="pb-2"><CardTitle className="text-base text-indigo">Cost Breakdown</CardTitle></CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={220}>
                 <BarChart data={costBreakdown}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(0,0%,90%)" />
-                  <XAxis dataKey="name" fontSize={10} />
-                  <YAxis fontSize={11} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(210, 7%, 88%)" />
+                  <XAxis dataKey="name" fontSize={10} stroke="hsl(210, 7%, 46%)" />
+                  <YAxis fontSize={11} stroke="hsl(210, 7%, 46%)" />
                   <Tooltip formatter={(v: number) => `$${v.toFixed(2)}`} />
-                  <Bar dataKey="cost" fill="hsl(153,100%,31%)" radius={[4,4,0,0]} />
+                  <Bar dataKey="cost" fill="hsl(153, 99%, 31%)" radius={[4,4,0,0]} />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
           </Card>
-          <Card>
-            <CardHeader className="pb-2"><CardTitle className="text-base">Quote Summary</CardTitle></CardHeader>
+          <Card className="shadow-sm">
+            <CardHeader className="pb-2"><CardTitle className="text-base text-indigo">Quote Summary</CardTitle></CardHeader>
             <CardContent className="space-y-3">
               <div className="flex justify-between"><span className="text-muted-foreground">BOM Cost</span><span className="font-bold">${totalBomCost.toFixed(2)}</span></div>
               <div className="flex justify-between"><span className="text-muted-foreground">Margin (25%)</span><span className="font-bold">${(totalBomCost * margin).toFixed(2)}</span></div>

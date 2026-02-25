@@ -32,7 +32,7 @@ export default function Templates() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold flex items-center gap-2"><Library className="h-6 w-6 text-primary" />Template Library</h1>
+        <h1 className="text-2xl font-bold flex items-center gap-2 text-indigo"><Library className="h-6 w-6 text-primary" />Template Library</h1>
         <p className="text-muted-foreground">Browse and use pre-built report templates.</p>
       </div>
 
@@ -55,13 +55,13 @@ export default function Templates() {
       {/* Gallery */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {filtered.map((t) => (
-          <Card key={t.id} className="hover:border-primary/40 hover:shadow-md transition-all">
+          <Card key={t.id} className="hover:border-primary/40 hover:shadow-md transition-all shadow-sm">
             <CardContent className="p-0">
               {/* Preview Thumbnail */}
               <div className="h-32 bg-muted/50 rounded-t-lg flex items-center justify-center relative">
                 <FileSpreadsheet className="h-10 w-10 text-muted-foreground/30" />
                 {t.premium && (
-                  <Badge className="absolute top-2 right-2 bg-chart-3 text-foreground gap-1"><Star className="h-3 w-3" />Premium</Badge>
+                  <Badge className="absolute top-2 right-2 bg-amber text-amber-foreground gap-1"><Star className="h-3 w-3" />Premium</Badge>
                 )}
               </div>
               <div className="p-4">
