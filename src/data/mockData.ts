@@ -151,14 +151,60 @@ export const reportTypes = [
   { id: "supplier-scorecard", name: "Supplier Scorecard", department: "Purchasing", usageCount: 211, trending: true },
 ];
 
-// ─── SAP TABLES ───
+// ─── SAP TABLES (enhanced) ───
 export const sapTables = [
-  { name: "MARA", description: "Material Master", records: 45230, lastSync: "2026-02-24 08:30", status: "synced" },
-  { name: "EKPO", description: "Purchase Order Items", records: 128450, lastSync: "2026-02-24 08:30", status: "synced" },
-  { name: "STPO", description: "BOM Items", records: 67890, lastSync: "2026-02-24 06:00", status: "synced" },
-  { name: "QALS", description: "Quality Inspection Lots", records: 12340, lastSync: "2026-02-24 08:30", status: "synced" },
-  { name: "VBAP", description: "Sales Order Items", records: 89120, lastSync: "2026-02-23 22:00", status: "stale" },
-  { name: "AFKO", description: "Production Order Header", records: 34560, lastSync: "2026-02-24 08:30", status: "synced" },
+  { name: "MARA", description: "Material Master", records: 45230, lastSync: "2026-02-24 08:30", status: "synced", category: "Material", columns: 48, keyFields: ["MATNR", "MTART", "MATKL"], syncMode: "Delta" as const },
+  { name: "EKPO", description: "Purchase Order Items", records: 128450, lastSync: "2026-02-24 08:30", status: "synced", category: "Procurement", columns: 53, keyFields: ["EBELN", "EBELP", "MATNR", "NETWR"], syncMode: "Delta" as const },
+  { name: "STPO", description: "BOM Items", records: 67890, lastSync: "2026-02-24 06:00", status: "synced", category: "Production", columns: 32, keyFields: ["STLNR", "STLKN", "IDNRK"], syncMode: "Full" as const },
+  { name: "QALS", description: "Quality Inspection Lots", records: 12340, lastSync: "2026-02-24 08:30", status: "synced", category: "Quality", columns: 28, keyFields: ["PRUEFLOS", "MATNR", "STAT"], syncMode: "Delta" as const },
+  { name: "VBAP", description: "Sales Order Items", records: 89120, lastSync: "2026-02-23 22:00", status: "stale", category: "Sales", columns: 41, keyFields: ["VBELN", "POSNR", "MATNR"], syncMode: "Full" as const },
+  { name: "AFKO", description: "Production Order Header", records: 34560, lastSync: "2026-02-24 08:30", status: "synced", category: "Production", columns: 35, keyFields: ["AUFNR", "PLNBEZ", "GAMNG"], syncMode: "Delta" as const },
+];
+
+// ─── SAP FIELD MAPPINGS ───
+export const sapFieldMappings = [
+  { sapField: "EKPO.EBELN", normalized: "PO Number", dataType: "CHAR(10)", example: "4500000001" },
+  { sapField: "EKPO.EBELP", normalized: "PO Line Item", dataType: "NUMC(5)", example: "00010" },
+  { sapField: "EKPO.MATNR", normalized: "Material Number", dataType: "CHAR(18)", example: "MAT-PCB-001" },
+  { sapField: "EKPO.TXZ01", normalized: "Material Description", dataType: "CHAR(40)", example: "PCB Standoff M3x5mm" },
+  { sapField: "EKPO.MENGE", normalized: "Quantity", dataType: "QUAN(13)", example: "200.000" },
+  { sapField: "EKPO.MEINS", normalized: "Unit of Measure", dataType: "UNIT(3)", example: "EA" },
+  { sapField: "EKPO.NETWR", normalized: "Net Order Value", dataType: "CURR(15)", example: "1032.00" },
+  { sapField: "EKPO.WAERS", normalized: "Currency", dataType: "CUKY(5)", example: "INR" },
+  { sapField: "EKPO.LIFNR", normalized: "Supplier ID", dataType: "CHAR(10)", example: "VND-0042" },
+  { sapField: "EKPO.WERKS", normalized: "Plant Code", dataType: "CHAR(4)", example: "1000" },
+  { sapField: "EKPO.LGORT", normalized: "Storage Location", dataType: "CHAR(4)", example: "0001" },
+  { sapField: "EKPO.MATKL", normalized: "Material Group", dataType: "CHAR(9)", example: "ELEC-COMP" },
+];
+
+// ─── SAP ALERT CONFIG ───
+export const sapAlertConfig = [
+  { id: "shortage-risk", label: "Shortage Risk", description: "Alert when component stock falls below safety threshold", enabled: true, threshold: "< 14 days supply", severity: "critical" as const },
+  { id: "stale-data", label: "Stale Data", description: "Alert when table sync exceeds freshness window", enabled: true, threshold: "> 8 hours", severity: "warning" as const },
+  { id: "quality-gate", label: "Quality Gate", description: "Alert on new or changed quality inspection lots", enabled: true, threshold: "Any new QALS entry", severity: "info" as const },
+  { id: "price-variance", label: "Price Variance", description: "Alert when PO net value deviates from standard cost", enabled: false, threshold: "> 15% deviation", severity: "warning" as const },
+];
+
+// ─── SAP PURCHASE ORDERS (from Excel) ───
+export const sapPurchaseOrders = [
+  { po: "4500000001", item: "00010", supplier: "Pinnacle Mechanical Parts", material: "PCB Standoff M3x5mm", qty: 200, netValue: 1032, currency: "INR", status: "Completed" },
+  { po: "4500000001", item: "00020", supplier: "Meridian Technologies", material: "Op-Amp SOT23-5", qty: 500, netValue: 174, currency: "USD", status: "Completed" },
+  { po: "4500000016", item: "00010", supplier: "Meridian Technologies", material: "MCU ARM Cortex-M4", qty: 1000, netValue: 3484, currency: "USD", status: "Partial" },
+  { po: "4500000010", item: "00010", supplier: "Pacific Trading", material: "Wi-Fi Module 802.11", qty: 5000, netValue: 23610, currency: "USD", status: "Completed" },
+  { po: "4500000021", item: "00010", supplier: "Vertex Electronic", material: "Zener Diode 3.3V", qty: 2000, netValue: 72, currency: "USD", status: "Completed" },
+  { po: "4500000034", item: "00010", supplier: "Solaris Cable & Wire", material: "Ribbon Cable 10-Pin", qty: 500, netValue: 5642, currency: "INR", status: "Partial" },
+  { po: "4500000027", item: "00010", supplier: "Nexus Semiconductors", material: "Zener Diode 3.3V", qty: 5000, netValue: 159, currency: "USD", status: "Open" },
+  { po: "4500000032", item: "00010", supplier: "Atlas Precision Eng.", material: "PCB Prototype Service", qty: 2, netValue: 116909, currency: "INR", status: "Partial" },
+];
+
+// ─── SAP ALERTS ───
+export const sapAlerts = [
+  { id: 1, level: "critical" as const, message: "Shortage risk for TUSB320IRWBR — only 1,200 units remaining, 14-day supply at current burn rate", action: "View Component", actionTarget: "component" },
+  { id: 2, level: "critical" as const, message: "PO 4500000032 — PCB Prototype Service net value ₹116,909 exceeds standard cost by 23%", action: "Review PO", actionTarget: "po" },
+  { id: 3, level: "warning" as const, message: "VBAP (Sales Orders) table sync is 10h stale — last sync Feb 23, 22:00", action: "Force Sync", actionTarget: "sync" },
+  { id: 4, level: "warning" as const, message: "MCU ARM Cortex-M4 lead time extended to 56 days — 3 open POs affected", action: "View Impact", actionTarget: "component" },
+  { id: 5, level: "info" as const, message: "New quality gate QG-042 detected in SAP QALS for material MAT-PCB-001", action: "Review", actionTarget: "quality" },
+  { id: 6, level: "info" as const, message: "Delta sync completed — 1,247 records processed across 5 tables in 3.2s", action: "View Log", actionTarget: "sync" },
 ];
 
 // ─── USERS ───
