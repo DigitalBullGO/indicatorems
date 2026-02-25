@@ -55,7 +55,7 @@ export default function Index() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{kpi.label}</p>
-                  <p className="text-2xl font-bold mt-1 text-primary">{kpi.value}</p>
+                  <p className="text-2xl font-bold mt-1 text-foreground">{kpi.value}</p>
                   <div className="flex items-center gap-1 mt-1">
                     {kpi.up ? <TrendingUp className="h-3 w-3 text-primary" /> : <TrendingDown className="h-3 w-3 text-amber" />}
                     <span className={`text-xs font-medium ${kpi.up ? "text-primary" : "text-amber"}`}>{kpi.trend}</span>
