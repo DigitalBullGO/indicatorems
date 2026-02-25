@@ -105,8 +105,11 @@ export default function Index() {
                   contentStyle={{ borderRadius: "10px", border: "none", boxShadow: "0 8px 24px -4px rgba(0,0,0,0.12)" }}
                 />
                 <Legend wrapperStyle={{ paddingTop: "12px" }} />
-                <Bar yAxisId="left" dataKey="revenue" fill="url(#barTeal)" radius={[6, 6, 0, 0]} name="Revenue" />
-                <Line yAxisId="right" type="monotone" dataKey="orders" stroke="url(#lineIndigo)" strokeWidth={3} dot={{ fill: "hsl(232, 48%, 48%)", strokeWidth: 0, r: 4 }} activeDot={{ r: 6, fill: "hsl(232, 48%, 48%)" }} name="Orders" />
+                <Bar yAxisId="left" dataKey="revenue" radius={[6, 6, 0, 0]} name="Revenue">
+                  {monthlyRevenue.map((_, i) => (
+                    <Cell key={i} fill={i % 2 === 0 ? "hsl(177, 55%, 39%)" : "hsl(0, 0%, 0%)"} />
+                  ))}
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
