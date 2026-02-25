@@ -63,14 +63,14 @@ export default function AppLayout() {
                 to={item.url}
                 end
                 className={cn(
-                  "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors",
+                  "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm nav-item-hover",
                   active
                     ? "bg-sidebar-accent text-sidebar-primary font-medium"
                     : "text-sidebar-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground"
                 )}
                 activeClassName=""
               >
-                <item.icon className="h-4 w-4 shrink-0" />
+                <item.icon className="h-4 w-4 shrink-0 icon-hover" />
                 {!collapsed && <span className="truncate">{item.title}</span>}
               </NavLink>
             );
@@ -137,9 +137,9 @@ export default function AppLayout() {
             </DropdownMenu>
 
             {/* Notifications */}
-            <Button variant="ghost" size="icon" className="relative">
+            <Button variant="ghost" size="icon" className="relative icon-hover">
               <Bell className="h-4 w-4" />
-              <Badge className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-[10px] bg-amber text-amber-foreground">
+              <Badge className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-[10px] bg-amber text-amber-foreground badge-pulse">
                 3
               </Badge>
             </Button>
