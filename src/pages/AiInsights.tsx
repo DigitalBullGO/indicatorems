@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Brain, Send, BarChart3, AlertTriangle, TrendingUp, Zap, FileText } from "lucide-react";
+import { Brain, Send, BarChart3, AlertTriangle, TrendingUp, Zap, FileText, Sparkles } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 interface Message {
@@ -73,30 +73,43 @@ export default function AiInsights() {
           <p className="text-sm font-semibold text-muted-foreground">Conversational AI for data analysis and actionable insights.</p>
         </div>
 
-        <Card className="flex-1 flex flex-col shadow-sm">
+        <Card className="flex-1 flex flex-col card-premium border-0 overflow-hidden">
           <ScrollArea className="flex-1 p-4">
             <div className="space-y-4">
               {messages.map((msg, i) => (
                 <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-                  <div className={`max-w-[80%] rounded-lg p-3 text-sm ${msg.role === "user" ? "bg-indigo text-indigo-foreground" : "bg-muted"}`}>
-                    <p className="whitespace-pre-wrap">{msg.content}</p>
+                  <div className={`max-w-[80%] rounded-2xl p-4 text-sm ${
+                    msg.role === "user"
+                      ? "bg-indigo text-indigo-foreground shadow-md"
+                      : "bg-muted/60 border border-border/50"
+                  }`}>
+                    <p className="whitespace-pre-wrap leading-relaxed">{msg.content}</p>
                     {msg.chart && (
-                      <div className="mt-3 bg-card rounded-md p-2">
-                        <ResponsiveContainer width="100%" height={180}>
-                          <BarChart data={msg.chart.data}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="hsl(210, 7%, 88%)" />
-                            <XAxis dataKey="name" fontSize={10} stroke="hsl(210, 7%, 46%)" />
-                            <YAxis fontSize={10} tickFormatter={(v) => `$${v / 1000}K`} stroke="hsl(210, 7%, 46%)" />
-                            <Tooltip formatter={(v: number) => `$${(v / 1000).toFixed(0)}K`} />
-                            <Bar dataKey="value" fill="hsl(153, 99%, 31%)" radius={[3,3,0,0]} />
+                      <div className="mt-3 bg-card rounded-xl p-3 border shadow-sm">
+                        <ResponsiveContainer width="100%" height={190}>
+                          <BarChart data={msg.chart.data} barCategoryGap="20%">
+                            <defs>
+                              <linearGradient id="chatBarGrad" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stopColor="hsl(153, 99%, 38%)" stopOpacity={1} />
+                                <stop offset="100%" stopColor="hsl(153, 99%, 25%)" stopOpacity={0.85} />
+                              </linearGradient>
+                            </defs>
+                            <CartesianGrid strokeDasharray="3 3" stroke="hsl(210, 7%, 90%)" vertical={false} />
+                            <XAxis dataKey="name" fontSize={10} stroke="hsl(210, 7%, 56%)" tickLine={false} axisLine={false} />
+                            <YAxis fontSize={10} tickFormatter={(v) => `$${v / 1000}K`} stroke="hsl(210, 7%, 56%)" tickLine={false} axisLine={false} />
+                            <Tooltip
+                              formatter={(v: number) => `$${(v / 1000).toFixed(0)}K`}
+                              contentStyle={{ borderRadius: "10px", border: "none", boxShadow: "0 8px 24px -4px rgba(0,0,0,0.12)" }}
+                            />
+                            <Bar dataKey="value" fill="url(#chatBarGrad)" radius={[5, 5, 0, 0]} />
                           </BarChart>
                         </ResponsiveContainer>
                       </div>
                     )}
                     {msg.actions && (
-                      <div className="flex gap-2 mt-2 flex-wrap">
+                      <div className="flex gap-2 mt-3 flex-wrap">
                         {msg.actions.map((a) => (
-                          <Button key={a} variant="outline" size="sm" className="text-xs h-7">{a}</Button>
+                          <Button key={a} variant="outline" size="sm" className="text-xs h-7 rounded-full font-semibold hover:bg-primary/5 hover:border-primary/40">{a}</Button>
                         ))}
                       </div>
                     )}
@@ -107,45 +120,63 @@ export default function AiInsights() {
           </ScrollArea>
 
           {/* Suggested */}
-          <div className="px-4 pb-2 flex gap-2 flex-wrap">
+          <div className="px-4 pb-3 flex gap-2 flex-wrap">
             {sampleQueries.map((q) => (
-              <Button key={q} variant="outline" size="sm" className="text-xs" onClick={() => handleSend(q)}>{q}</Button>
+              <Button key={q} variant="outline" size="sm" className="text-xs rounded-full font-semibold hover:bg-primary/5 hover:border-primary/40" onClick={() => handleSend(q)}>
+                <Sparkles className="h-3 w-3 mr-1 text-primary" />{q}
+              </Button>
             ))}
           </div>
 
           {/* Input */}
-          <div className="p-4 border-t flex gap-2">
-            <Input value={input} onChange={(e) => setInput(e.target.value)} placeholder="Ask a question…" onKeyDown={(e) => e.key === "Enter" && handleSend(input)} />
-            <Button onClick={() => handleSend(input)} size="icon"><Send className="h-4 w-4" /></Button>
+          <div className="p-4 border-t bg-muted/20 flex gap-2">
+            <Input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Ask a question about your data…"
+              className="rounded-full bg-background border-border/60 focus-visible:ring-primary/30"
+              onKeyDown={(e) => e.key === "Enter" && handleSend(input)}
+            />
+            <Button onClick={() => handleSend(input)} size="icon" className="rounded-full shrink-0 btn-glow">
+              <Send className="h-4 w-4" />
+            </Button>
           </div>
         </Card>
       </div>
 
       {/* Sidebar Panels */}
-      <div className="w-72 hidden lg:flex flex-col gap-4">
-        <Card className="shadow-sm">
-          <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-amber" />Anomalies</CardTitle></CardHeader>
-          <CardContent className="space-y-2 text-xs">
-            <div className="p-2 rounded bg-amber/10 border border-amber/20">
-              <p className="font-medium">TUSB320IRWBR — 130d lead time</p>
-              <p className="text-muted-foreground">Exceeds 120-day threshold</p>
+      <div className="w-72 hidden lg:flex flex-col gap-5">
+        <Card className="card-premium border-0 gradient-card-amber">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-bold flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 text-amber" />Anomalies
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2.5 text-xs">
+            <div className="p-3 rounded-lg bg-amber/10 border border-amber/20">
+              <p className="font-bold text-foreground">TUSB320IRWBR — 130d lead time</p>
+              <p className="text-muted-foreground font-semibold">Exceeds 120-day threshold</p>
             </div>
-            <div className="p-2 rounded bg-accent border">
-              <p className="font-medium">Production cost variance +8%</p>
-              <p className="text-muted-foreground">Department: PP — last 30 days</p>
+            <div className="p-3 rounded-lg bg-background border">
+              <p className="font-bold text-foreground">Production cost variance +8%</p>
+              <p className="text-muted-foreground font-semibold">Department: PP — last 30 days</p>
             </div>
           </CardContent>
         </Card>
-        <Card className="shadow-sm">
-          <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2"><TrendingUp className="h-4 w-4 text-primary" />Trends</CardTitle></CardHeader>
-          <CardContent className="space-y-2 text-xs">
-            <div className="p-2 rounded bg-primary/5 border border-primary/20">
-              <p className="font-medium">Passive component costs ↓ 5.2%</p>
-              <p className="text-muted-foreground">Month-over-month improvement</p>
+        <Card className="card-premium border-0 gradient-card-warm">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-bold flex items-center gap-2">
+              <TrendingUp className="h-4 w-4 text-primary" />Trends
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2.5 text-xs">
+            <div className="p-3 rounded-lg bg-primary/5 border border-primary/15">
+              <p className="font-bold text-foreground">Passive component costs ↓ 5.2%</p>
+              <p className="text-muted-foreground font-semibold">Month-over-month improvement</p>
             </div>
-            <div className="p-2 rounded bg-primary/5 border border-primary/20">
-              <p className="font-medium">Order volume ↑ 12%</p>
-              <p className="text-muted-foreground">Driven by EMEA region growth</p>
+            <div className="p-3 rounded-lg bg-primary/5 border border-primary/15">
+              <p className="font-bold text-foreground">Order volume ↑ 12%</p>
+              <p className="text-muted-foreground font-semibold">Driven by EMEA region growth</p>
             </div>
           </CardContent>
         </Card>
