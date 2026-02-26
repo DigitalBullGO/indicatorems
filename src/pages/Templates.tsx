@@ -105,8 +105,8 @@ export default function Templates() {
 
         {/* ── TAB 1: AI Prompts ── */}
         <TabsContent value="ai-prompts" className="space-y-8">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground italic">
-            <Sparkles className="h-4 w-4" style={{ color: categoryColors.ai.bg }} />
+          <div className="flex items-center gap-2 text-base font-bold text-muted-foreground">
+            <Sparkles className="h-5 w-5" style={{ color: categoryColors.ai.bg }} />
             AI Templates powered by DigiBull's ISTVON Framework
           </div>
           {aiSections.map((section) => {
