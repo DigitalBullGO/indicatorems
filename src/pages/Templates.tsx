@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { toast } from "sonner";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -114,7 +115,7 @@ export default function Templates() {
                   {section.label}
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                  {items.map((t) => (
+                    {items.map((t) => (
                     <TemplateCard
                       key={t.id}
                       title={t.title}
@@ -123,6 +124,11 @@ export default function Templates() {
                       actionLabel="Use Template"
                       actionIcon={<Sparkles className="h-3 w-3" />}
                       onAction={() => setSelectedAI(t)}
+                      onCopy={() => {
+                        navigator.clipboard.writeText(t.prompt);
+                        toast.success("Prompt copied to clipboard");
+                      }}
+                      onEye={() => setSelectedAI(t)}
                       accentColor={categoryColors.ai}
                     />
                   ))}
@@ -221,6 +227,8 @@ function TemplateCard({
   onAction,
   showPreview,
   onPreview,
+  onCopy,
+  onEye,
   accentColor,
 }: {
   title: string;
@@ -233,6 +241,8 @@ function TemplateCard({
   onAction: () => void;
   showPreview?: boolean;
   onPreview?: () => void;
+  onCopy?: () => void;
+  onEye?: () => void;
   accentColor?: { bg: string; bgLight: string; border: string; text: string };
 }) {
   const accent = accentColor || { bg: "hsl(var(--primary))", bgLight: "hsl(var(--accent))", border: "hsl(var(--primary))", text: "hsl(var(--primary))" };
@@ -271,7 +281,7 @@ function TemplateCard({
               {actionIcon}
               {actionLabel}
             </Button>
-            <Button variant="ghost" size="sm" className="text-xs gap-1">
+            <Button variant="ghost" size="sm" className="text-xs gap-1" onClick={onCopy}>
               <Copy className="h-3 w-3" />
             </Button>
             {showPreview && onPreview ? (
@@ -279,7 +289,7 @@ function TemplateCard({
                 <Eye className="h-3 w-3" />
               </Button>
             ) : (
-              <Button variant="ghost" size="sm" className="text-xs gap-1">
+              <Button variant="ghost" size="sm" className="text-xs gap-1" onClick={onEye}>
                 <Eye className="h-3 w-3" />
               </Button>
             )}

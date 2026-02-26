@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,16 +22,15 @@ export default function AIPromptModal({ template, open, onOpenChange }: AIPrompt
   const [loading, setLoading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  // Reset state when template changes
-  const handleOpenChange = (isOpen: boolean) => {
-    if (isOpen && template) {
+  // Sync prompt state when modal opens or template changes
+  useEffect(() => {
+    if (open && template) {
       setPrompt(template.prompt);
       setOutput("");
       setFile(null);
       setDateFilter("");
     }
-    onOpenChange(isOpen);
-  };
+  }, [open, template]);
 
   const handleGenerate = async () => {
     if (!prompt.trim()) {
@@ -52,7 +51,7 @@ export default function AIPromptModal({ template, open, onOpenChange }: AIPrompt
   if (!template) return null;
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-lg font-bold flex items-center gap-2">
