@@ -1,71 +1,41 @@
 
 
-## Plan: Excel to Dashboard — 4-Step Stepper Wizard Implementation
+## Bug Analysis: AI Prompt Templates Not Displaying Pre-filled Prompts
 
-### Overview
+### Root Cause
 
-Rewrite `src/pages/ExcelDashboard.tsx` from a simple upload-then-view page into a 4-step wizard: **Intake → Transform → Analyze → Visualize**, following the document's specifications.
+The `AIPromptModal` component has a state initialization bug. The `handleOpenChange` function sets `setPrompt(template.prompt)` only when `isOpen` is `true`, but this function is the Dialog's `onOpenChange` callback — it only fires when the dialog state changes **internally** (e.g., clicking the close button or overlay). When the modal first opens via `setSelectedAI(t)` (which sets `open={!!selectedAI}` to `true`), the `onOpenChange` callback is **not** triggered by Radix Dialog for the initial controlled open. The prompt remains as the initial empty string `""`.
 
----
+Additionally, the **Copy** and **Eye** buttons on AI prompt cards have **no click handlers** — they are purely decorative and do nothing.
 
-### Step 1: Data Intake ("Intake")
+### Fix Plan
 
-- Horizontal stepper bar at the top (same visual pattern as SAP Bridge: numbered circles, active in Slate Teal, completed in Deep Indigo, locked in Cool Gray)
-- Existing drag-and-drop upload zone (keep current styling)
-- After upload, show a **Column Mapping** interface: a table showing uploaded headers on the left and dropdown selectors on the right to map to system fields (Supplier Name, Commodity Category, Spend Amount, MPN, Qty, Unit Cost)
-- "Skip to Quote" shortcut button for power users — navigates to `/excel-quote`
-- File metadata badge row (filename, rows × columns)
+**File: `src/components/templates/AIPromptModal.tsx`**
 
-### Step 2: Smart Transformation ("Transform")
+- Add a `useEffect` that watches `template` and `open` — when both are truthy, set `prompt` to `template.prompt` and reset other state fields. This ensures the prompt is populated regardless of how the dialog opens.
 
-- **Automated Cleansing Summary**: Show a card with cleansing stats (e.g., "14 MPN formats standardized", "3 duplicate rows removed", "2 blank fields filled")
-- **Data Cleaning Log**: A scrollable panel showing before/after diffs for each correction (raw value → corrected value, with correction type badge)
-- **Before & After Preview**: Side-by-side mini-tables showing raw data vs. standardized data so users can verify transformations
-- **Locked** until Step 1 mapping is confirmed
+```
+useEffect(() => {
+  if (open && template) {
+    setPrompt(template.prompt);
+    setOutput("");
+    setFile(null);
+    setDateFilter("");
+  }
+}, [open, template]);
+```
 
-### Step 3: Intelligence & LLM Reasoning ("Analyze")
+- Simplify `handleOpenChange` to just pass through to `onOpenChange` (no state setting needed there anymore).
 
-- **Purpose Selector**: Radio group asking "What is the purpose of this upload?" with options: Deep Analysis, Create Analytics/Reports, Generate RFQ, Sales Quote
-- If "Sales Quote" or "RFQ" is selected, show a recommendation banner: "We recommend switching to the BOM to Quote agent" with a navigation button
-- **LLM Switcher**: A prominent toggle/radio group to select the analysis model:
-  - Claude 3.5 Sonnet (recommended for detailed reasoning & anomalies)
-  - GPT-4o (best for high-speed summaries)
-  - Local LLM (for offline/private analysis)
-  - Each option has a tooltip describing its strength
-- **Analysis Output**: A mock AI analysis card showing identified insights (pricing anomalies, spend concentration, supplier risk)
-- **Locked** until Step 2 is completed
+**File: `src/pages/Templates.tsx`**
 
-### Step 4: Executive Visualization ("Visualize")
+- **Copy button**: Add an `onClick` handler that copies the template's prompt text to the clipboard using `navigator.clipboard.writeText()` and shows a success toast.
+- **Eye button**: For AI prompt cards, add an `onClick` that opens the `AIPromptModal` in a read-only or preview fashion (same as "Use Template" — open the modal so the user can see the prompt).
 
-- Move the existing charts and KPI cards here (Cost by MPN bar chart, Spend by Commodity pie, KPI summary cards)
-- Add additional visualizations: Spend Trends line, Currency Exposure breakdown
-- **"Switch to Agent" button**: Handoff to BOM to Quote (`/excel-quote`) passing context
-- **Locked** until Step 3 is completed
+### Changes Summary
 
----
-
-### Mock Data
-
-All mock data defined inline in the component (no changes to `mockData.ts`):
-- `cleaningLog`: Array of `{ raw, corrected, type, field }` entries (e.g., `{ raw: "rc0402fr07", corrected: "RC0402FR-07", type: "MPN Format", field: "MPN" }`)
-- `columnMappingOptions`: System fields for the mapping dropdowns
-- `llmModels`: Array of `{ id, name, description, recommended }` for the LLM switcher
-- `analysisInsights`: Mock AI-generated insights for Step 3 output
-
-### Navigation & State
-
-- `activeStep` state (0-3) with Next/Back buttons
-- Steps 2, 3, 4 locked until prior step is "confirmed" via a `stepsCompleted` state object
-- Column mapping confirmation unlocks Step 2; cleansing review confirmation unlocks Step 3; purpose selection + analysis unlocks Step 4
-
-### Files to Modify
-
-1. **`src/pages/ExcelDashboard.tsx`** — Complete rewrite with 4-step stepper wizard
-
-### UI Components Used
-- Existing: `Card`, `Button`, `Badge`, `Table`, `Input`, `Select`, `Switch`, `Progress`
-- Icons: `Upload`, `FileSpreadsheet`, `BarChart3`, `PieChart`, `Sparkles`, `CheckCircle2`, `ArrowRight`, `ArrowLeft`, `Lock`, `Brain`, `Wand2`, `RefreshCw`, `ExternalLink`
-- Charts: `BarChart`, `PieChart`, `LineChart` from recharts
-- Toast via `sonner` for confirmations
-- `useNavigate` from react-router-dom for agent handoff navigation
+| File | Change |
+|------|--------|
+| `src/components/templates/AIPromptModal.tsx` | Add `useEffect` to sync prompt state when `open`/`template` change |
+| `src/pages/Templates.tsx` | Add `onCopy` and `onPreview` callbacks to `TemplateCard` for AI prompt cards; wire Copy button to clipboard + toast; wire Eye button to open the modal |
 
