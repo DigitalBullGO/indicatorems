@@ -5,13 +5,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AppLayout from "@/components/layout/AppLayout";
 import Index from "./pages/Index";
-import ExcelDashboard from "./pages/ExcelDashboard";
-import ExcelQuote from "./pages/ExcelQuote";
+import ExcelSapHub from "./pages/ExcelSapHub";
 import AiInsights from "./pages/AiInsights";
-import SapBridge from "./pages/SapBridge";
 import DragDropBuilder from "./pages/DragDropBuilder";
-import Reports from "./pages/Reports";
-import Templates from "./pages/Templates";
+import ReportsAndTemplates from "./pages/ReportsAndTemplates";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
@@ -26,13 +23,10 @@ const App = () => (
         <Routes>
           <Route element={<AppLayout />}>
             <Route path="/" element={<Index />} />
-            <Route path="/excel-dashboard" element={<ExcelDashboard />} />
-            <Route path="/excel-quote" element={<ExcelQuote />} />
+            <Route path="/excel-sap" element={<ExcelSapHub />} />
             <Route path="/ai-insights" element={<AiInsights />} />
-            <Route path="/sap-bridge" element={<SapBridge />} />
             <Route path="/drag-drop" element={<DragDropBuilder />} />
-            <Route path="/reports" element={<Reports />} />
-            <Route path="/templates" element={<Templates />} />
+            <Route path="/reports-templates" element={<ReportsAndTemplates />} />
             <Route path="/admin" element={<Admin />} />
           </Route>
           <Route path="*" element={<NotFound />} />

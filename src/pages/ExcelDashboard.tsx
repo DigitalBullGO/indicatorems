@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -13,7 +12,7 @@ import {
 import {
   Upload, FileSpreadsheet, BarChart3, PieChart as PieIcon, Sparkles,
   CheckCircle2, ArrowRight, ArrowLeft, Lock, Brain, Wand2, RefreshCw,
-  ExternalLink, TrendingUp, AlertTriangle, DollarSign,
+  TrendingUp, AlertTriangle, DollarSign,
 } from "lucide-react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -102,7 +101,6 @@ const steps = [
 // ── Component ───────────────────────────────────────────────────────
 
 export default function ExcelDashboard() {
-  const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState(0);
   const [uploaded, setUploaded] = useState(false);
   const [stepsCompleted, setStepsCompleted] = useState({ 0: false, 1: false, 2: false, 3: false });
@@ -183,14 +181,9 @@ export default function ExcelDashboard() {
               <p className="font-bold text-lg text-foreground">Drop your Excel or CSV file here</p>
               <p className="text-sm font-semibold text-muted-foreground mt-1">Supports .xlsx, .xls, .csv up to 50MB</p>
             </div>
-            <div className="flex gap-3">
-              <Button onClick={() => setUploaded(true)} className="gap-2 btn-glow px-6 h-11 text-sm font-bold">
-                <FileSpreadsheet className="h-4 w-4" /> Upload Sample Data
-              </Button>
-              <Button variant="outline" onClick={() => navigate("/excel-quote")} className="gap-2 h-11 text-sm font-semibold">
-                <ExternalLink className="h-4 w-4" /> Skip to Quote
-              </Button>
-            </div>
+            <Button onClick={() => setUploaded(true)} className="gap-2 btn-glow px-6 h-11 text-sm font-bold">
+              <FileSpreadsheet className="h-4 w-4" /> Upload Sample Data
+            </Button>
           </CardContent>
         </Card>
       ) : (
@@ -205,9 +198,6 @@ export default function ExcelDashboard() {
             </Badge>
             <Button variant="ghost" size="sm" onClick={() => { setUploaded(false); setStepsCompleted((p) => ({ ...p, 0: false })); }} className="font-semibold">
               Clear
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => navigate("/excel-quote")} className="ml-auto gap-1.5 font-semibold">
-              <ExternalLink className="h-3.5 w-3.5" /> Skip to Quote
             </Button>
           </div>
 
@@ -441,17 +431,6 @@ export default function ExcelDashboard() {
             ))}
           </RadioGroup>
 
-          {(purpose === "sales-quote" || purpose === "rfq") && (
-            <div className="mt-4 p-3.5 rounded-lg bg-amber/10 border border-amber/30 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-amber" />
-                <span className="text-sm font-semibold">We recommend switching to the BOM to Quote agent for {purpose === "rfq" ? "RFQ generation" : "sales quoting"}.</span>
-              </div>
-              <Button size="sm" variant="outline" onClick={() => navigate("/excel-quote")} className="gap-1.5 font-bold">
-                Switch <ExternalLink className="h-3.5 w-3.5" />
-              </Button>
-            </div>
-          )}
         </CardContent>
       </Card>
 
@@ -677,12 +656,9 @@ export default function ExcelDashboard() {
       </div>
 
       {/* Actions */}
-      <div className="flex justify-between">
+      <div className="flex justify-end">
         <Button variant="outline" onClick={() => setActiveStep(2)} className="gap-2 font-semibold">
           <ArrowLeft className="h-4 w-4" /> Back
-        </Button>
-        <Button onClick={() => navigate("/excel-quote")} className="gap-2 font-bold btn-glow">
-          <ExternalLink className="h-4 w-4" /> Switch to BOM Agent
         </Button>
       </div>
     </div>
