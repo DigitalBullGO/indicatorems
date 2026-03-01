@@ -16,13 +16,10 @@ import { cn } from "@/lib/utils";
 
 const navItems = [
   { title: "Dashboard", url: "/", icon: Home },
-  { title: "Excel to Dashboard", url: "/excel-dashboard", icon: BarChart3 },
-  { title: "Excel to Quote", url: "/excel-quote", icon: FileSpreadsheet },
+  { title: "Excel & SAP Hub", url: "/excel-sap", icon: BarChart3 },
   { title: "AI Insights Pro", url: "/ai-insights", icon: Brain },
-  { title: "AI Bridge for SAP", url: "/sap-bridge", icon: Plug },
   { title: "Drag & Drop Builder", url: "/drag-drop", icon: LayoutGrid },
-  { title: "Pre-Engineered Reports", url: "/reports", icon: FileText },
-  { title: "Template Library", url: "/templates", icon: Library },
+  { title: "Reports & Templates", url: "/reports-templates", icon: FileText },
 ];
 
 const roles = ["CEO", "Manager", "Employee"] as const;
