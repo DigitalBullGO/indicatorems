@@ -1,41 +1,60 @@
 
 
-## Bug Analysis: AI Prompt Templates Not Displaying Pre-filled Prompts
+## Plan: Restructure Sidebar Navigation (7 → 5 modules)
 
-### Root Cause
+### New Sidebar Structure
 
-The `AIPromptModal` component has a state initialization bug. The `handleOpenChange` function sets `setPrompt(template.prompt)` only when `isOpen` is `true`, but this function is the Dialog's `onOpenChange` callback — it only fires when the dialog state changes **internally** (e.g., clicking the close button or overlay). When the modal first opens via `setSelectedAI(t)` (which sets `open={!!selectedAI}` to `true`), the `onOpenChange` callback is **not** triggered by Radix Dialog for the initial controlled open. The prompt remains as the initial empty string `""`.
-
-Additionally, the **Copy** and **Eye** buttons on AI prompt cards have **no click handlers** — they are purely decorative and do nothing.
-
-### Fix Plan
-
-**File: `src/components/templates/AIPromptModal.tsx`**
-
-- Add a `useEffect` that watches `template` and `open` — when both are truthy, set `prompt` to `template.prompt` and reset other state fields. This ensures the prompt is populated regardless of how the dialog opens.
-
-```
-useEffect(() => {
-  if (open && template) {
-    setPrompt(template.prompt);
-    setOutput("");
-    setFile(null);
-    setDateFilter("");
-  }
-}, [open, template]);
+```text
+Before (8 sidebar items)           After (5 sidebar items)
+─────────────────────              ─────────────────────
+Dashboard                          Dashboard
+Excel to Dashboard            →    Excel & SAP Hub
+Excel to Quote                →      (tabs: Excel Dashboard | SAP Bridge)
+AI Insights Pro               →    AI Insights Pro  (unchanged)
+AI Bridge for SAP             →    Drag & Drop Builder (unchanged)
+Drag & Drop Builder           →    Reports & Templates
+Pre-Engineered Reports        →      (tabs: Reports | Templates)
+Template Library              →
 ```
 
-- Simplify `handleOpenChange` to just pass through to `onOpenChange` (no state setting needed there anymore).
+**Excel to Quote is removed entirely.**
 
-**File: `src/pages/Templates.tsx`**
+### Feasibility
 
-- **Copy button**: Add an `onClick` handler that copies the template's prompt text to the clipboard using `navigator.clipboard.writeText()` and shows a success toast.
-- **Eye button**: For AI prompt cards, add an `onClick` that opens the `AIPromptModal` in a read-only or preview fashion (same as "Use Template" — open the modal so the user can see the prompt).
+Fully feasible. All pages are self-contained components. The `Tabs` pattern from Radix UI is already used in Templates.tsx. Existing page components embed directly inside tab panels with zero refactoring.
 
-### Changes Summary
+### Implementation Steps
 
-| File | Change |
+**1. Create `src/pages/ExcelSapHub.tsx`** — Wrapper with 2 tabs ("Excel Dashboard" | "SAP Bridge"), rendering existing `ExcelDashboard` and `SapBridge` content inline.
+
+**2. Create `src/pages/ReportsAndTemplates.tsx`** — Wrapper with 2 tabs ("Pre-Engineered Reports" | "Template Library"), rendering existing `Reports` and `Templates` content.
+
+**3. Update `src/App.tsx`**
+- Remove routes: `/excel-dashboard`, `/excel-quote`, `/ai-insights` (path reuse), `/sap-bridge`, `/reports`, `/templates`
+- Add: `/excel-sap` → `ExcelSapHub`, `/reports-templates` → `ReportsAndTemplates`
+- Keep: `/`, `/ai-insights`, `/drag-drop`, `/admin`
+
+**4. Update `src/components/layout/AppLayout.tsx`**
+- Reduce `navItems` to 5: Dashboard, Excel & SAP Hub (`/excel-sap`), AI Insights Pro (`/ai-insights`), Drag & Drop Builder (`/drag-drop`), Reports & Templates (`/reports-templates`)
+
+**5. Update `src/pages/Index.tsx`** — Update any dashboard cards linking to old routes.
+
+**6. Fix `src/pages/ExcelDashboard.tsx`** — Remove all "Skip to Quote" / "Switch to BOM Agent" buttons and `navigate("/excel-quote")` calls (4 occurrences), since Excel to Quote is removed.
+
+### Files Changed
+
+| File | Action |
 |------|--------|
-| `src/components/templates/AIPromptModal.tsx` | Add `useEffect` to sync prompt state when `open`/`template` change |
-| `src/pages/Templates.tsx` | Add `onCopy` and `onPreview` callbacks to `TemplateCard` for AI prompt cards; wire Copy button to clipboard + toast; wire Eye button to open the modal |
+| `src/pages/ExcelSapHub.tsx` | New — tabs wrapper |
+| `src/pages/ReportsAndTemplates.tsx` | New — tabs wrapper |
+| `src/App.tsx` | Update routes |
+| `src/components/layout/AppLayout.tsx` | Reduce navItems 8→5 |
+| `src/pages/Index.tsx` | Update dashboard links |
+| `src/pages/ExcelDashboard.tsx` | Remove Excel-to-Quote navigation references |
+
+### Impact
+- No data/state loss — existing components reused as-is inside tab wrappers
+- Excel to Quote module fully removed (page file can be kept or deleted)
+- Sidebar becomes cleaner (5 items instead of 8)
+- Estimated effort: moderate (mostly routing, wrapper creation, and link cleanup)
 
