@@ -19,6 +19,7 @@ const navItems = [
   { title: "Excel & SAP Hub", url: "/excel-sap", icon: BarChart3 },
   { title: "AI Insights Pro", url: "/ai-insights", icon: Brain },
   { title: "Drag & Drop Builder", url: "/drag-drop", icon: LayoutGrid },
+  { title: "BOM to Quote", url: "/bom-quote", icon: FileSpreadsheet },
   { title: "Reports & Templates", url: "/reports-templates", icon: FileText },
 ];
 
