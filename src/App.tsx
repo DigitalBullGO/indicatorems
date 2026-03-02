@@ -9,6 +9,7 @@ import ExcelSapHub from "./pages/ExcelSapHub";
 import AiInsights from "./pages/AiInsights";
 import DragDropBuilder from "./pages/DragDropBuilder";
 import ReportsAndTemplates from "./pages/ReportsAndTemplates";
+import ExcelQuote from "./pages/ExcelQuote";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/excel-sap" element={<ExcelSapHub />} />
             <Route path="/ai-insights" element={<AiInsights />} />
             <Route path="/drag-drop" element={<DragDropBuilder />} />
+            <Route path="/bom-quote" element={<ExcelQuote />} />
             <Route path="/reports-templates" element={<ReportsAndTemplates />} />
             <Route path="/admin" element={<Admin />} />
           </Route>

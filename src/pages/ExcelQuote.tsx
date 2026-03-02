@@ -27,7 +27,7 @@ export default function ExcelQuote() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-indigo">Excel to Quote</h1>
+        <h1 className="text-2xl font-bold text-indigo">BOM to Quote</h1>
         <p className="text-sm font-semibold text-muted-foreground">Transform BOMs into complete sales quotations.</p>
       </div>
 
