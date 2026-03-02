@@ -7,13 +7,20 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select";
+import {
   Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
   Library, Download, Copy, Eye, Search, FileSpreadsheet, Star,
   Sparkles, FileText, ShoppingCart, Microscope, Factory,
   HelpCircle, Beef, Lock, ChevronLeft, ChevronRight,
-  Brain, Award, TrendingUp,
+  Brain, Award, TrendingUp, Filter,
+  AlertTriangle, DollarSign, Clock, Settings, BarChart3,
+  Table, CreditCard, Calculator, GitBranch, PieChart,
+  RefreshCw, Columns, ClipboardCheck, Gauge, UserPlus,
+  ClipboardList, AlertOctagon,
 } from "lucide-react";
 import {
   aiPromptTemplates,
@@ -24,6 +31,8 @@ import {
   type ReportTemplate,
   type TemplatePrice,
   type TemplateFormat,
+  type TemplateDepartment,
+  type TemplateCategory,
 } from "@/data/templateData";
 import AIPromptModal from "@/components/templates/AIPromptModal";
 import BusinessCommModal from "@/components/templates/BusinessCommModal";
@@ -32,11 +41,54 @@ import ReportPreviewModal from "@/components/templates/ReportPreviewModal";
 
 const ITEMS_PER_PAGE = 8;
 
+// Icon mapping for template thumbnails
+const iconMap: Record<string, React.ElementType> = {
+  ShoppingCart, Search, DollarSign, AlertTriangle, TrendingUp,
+  Microscope, Factory, Gauge, ClipboardCheck, UserPlus,
+  ClipboardList, FileText, Clock, Award, Settings,
+  RefreshCw, AlertOctagon, BarChart3 /* BarChart alias */, 
+  Table, CreditCard, Calculator, GitBranch, PieChart,
+  Columns, Grid: Table, // alias
+  Handshake: Award, // fallback
+  FileWarning: AlertTriangle, // fallback
+};
+
 // Category accent colors
 const categoryColors = {
   ai: { bg: "hsl(177, 55%, 39%)", bgLight: "hsl(177, 55%, 95%)", border: "hsl(177, 55%, 39%)", text: "hsl(177, 55%, 32%)" },
   comm: { bg: "hsl(45, 100%, 50%)", bgLight: "hsl(45, 100%, 95%)", border: "hsl(45, 100%, 50%)", text: "hsl(45, 100%, 35%)" },
   report: { bg: "hsl(232, 48%, 48%)", bgLight: "hsl(232, 48%, 95%)", border: "hsl(232, 48%, 48%)", text: "hsl(232, 48%, 40%)" },
+};
+
+// Thumbnail background patterns per icon to make each card visually unique
+const thumbnailPatterns: Record<string, { bg: string; accent: string }> = {
+  ShoppingCart: { bg: "hsl(177, 40%, 94%)", accent: "hsl(177, 55%, 45%)" },
+  Search: { bg: "hsl(210, 40%, 94%)", accent: "hsl(210, 55%, 50%)" },
+  DollarSign: { bg: "hsl(140, 35%, 93%)", accent: "hsl(140, 50%, 40%)" },
+  AlertTriangle: { bg: "hsl(35, 60%, 93%)", accent: "hsl(35, 80%, 50%)" },
+  TrendingUp: { bg: "hsl(160, 40%, 93%)", accent: "hsl(160, 55%, 40%)" },
+  Microscope: { bg: "hsl(270, 35%, 94%)", accent: "hsl(270, 50%, 55%)" },
+  Factory: { bg: "hsl(200, 30%, 93%)", accent: "hsl(200, 50%, 45%)" },
+  Gauge: { bg: "hsl(15, 50%, 94%)", accent: "hsl(15, 65%, 50%)" },
+  ClipboardCheck: { bg: "hsl(150, 35%, 93%)", accent: "hsl(150, 50%, 40%)" },
+  UserPlus: { bg: "hsl(220, 40%, 94%)", accent: "hsl(220, 55%, 50%)" },
+  ClipboardList: { bg: "hsl(190, 35%, 93%)", accent: "hsl(190, 50%, 45%)" },
+  FileText: { bg: "hsl(230, 35%, 94%)", accent: "hsl(230, 50%, 50%)" },
+  Clock: { bg: "hsl(40, 40%, 94%)", accent: "hsl(40, 60%, 45%)" },
+  Award: { bg: "hsl(280, 35%, 94%)", accent: "hsl(280, 50%, 50%)" },
+  Settings: { bg: "hsl(200, 20%, 93%)", accent: "hsl(200, 30%, 50%)" },
+  RefreshCw: { bg: "hsl(170, 35%, 93%)", accent: "hsl(170, 50%, 40%)" },
+  AlertOctagon: { bg: "hsl(0, 40%, 94%)", accent: "hsl(0, 55%, 50%)" },
+  BarChart3: { bg: "hsl(250, 35%, 94%)", accent: "hsl(250, 50%, 50%)" },
+  Table: { bg: "hsl(180, 30%, 93%)", accent: "hsl(180, 45%, 42%)" },
+  CreditCard: { bg: "hsl(210, 35%, 94%)", accent: "hsl(210, 50%, 50%)" },
+  Calculator: { bg: "hsl(300, 25%, 94%)", accent: "hsl(300, 40%, 50%)" },
+  GitBranch: { bg: "hsl(130, 30%, 93%)", accent: "hsl(130, 45%, 40%)" },
+  PieChart: { bg: "hsl(260, 35%, 94%)", accent: "hsl(260, 50%, 50%)" },
+  Columns: { bg: "hsl(190, 30%, 93%)", accent: "hsl(190, 45%, 45%)" },
+  Handshake: { bg: "hsl(30, 40%, 94%)", accent: "hsl(30, 55%, 45%)" },
+  FileWarning: { bg: "hsl(20, 50%, 94%)", accent: "hsl(20, 60%, 50%)" },
+  Grid: { bg: "hsl(180, 30%, 93%)", accent: "hsl(180, 45%, 42%)" },
 };
 
 const formatBadgeColors: Record<TemplateFormat, string> = {
@@ -52,24 +104,6 @@ const formatLabels: Record<TemplateFormat, string> = {
   pdf: "PDF",
   text: "Text",
 };
-
-// Section headers
-const aiSections = [
-  { key: "sourcing" as const, label: "Sourcing & Procurement", icon: ShoppingCart },
-  { key: "quality" as const, label: "Quality", icon: Microscope },
-  { key: "production" as const, label: "Production", icon: Factory },
-];
-
-const commSections = [
-  { key: "vendor" as const, label: "Vendor Communication" },
-  { key: "customer" as const, label: "Customer Communication" },
-  { key: "internal" as const, label: "Internal Communication" },
-];
-
-const reportSections = [
-  { key: "dynamic" as const, label: "Sourcing Reports", icon: "📊" },
-  { key: "inputs" as const, label: "Sourcing Inputs & Calculators", icon: "📁" },
-];
 
 // ISTVON explanation
 const istvonSteps = [
@@ -104,9 +138,16 @@ function getFeaturedTemplates() {
   return all.sort((a, b) => b.downloads - a.downloads).slice(0, 3);
 }
 
+const departments: TemplateDepartment[] = ["Purchasing", "Production", "Sales", "Quality", "Finance"];
+const categories: TemplateCategory[] = ["Reports", "Prompts", "Business Communication"];
+const prices: TemplatePrice[] = ["Included", "Premium"];
+
 export default function Templates() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
+  const [deptFilter, setDeptFilter] = useState<string>("all");
+  const [catFilter, setCatFilter] = useState<string>("all");
+  const [priceFilter, setPriceFilter] = useState<string>("all");
   const [selectedAI, setSelectedAI] = useState<AIPromptTemplate | null>(null);
   const [selectedComm, setSelectedComm] = useState<BusinessCommTemplate | null>(null);
   const [selectedReport, setSelectedReport] = useState<ReportTemplate | null>(null);
@@ -121,21 +162,43 @@ export default function Templates() {
 
   const q = search.toLowerCase();
 
-  const filteredAI = useMemo(
-    () => aiPromptTemplates.filter((t) => t.title.toLowerCase().includes(q) || t.subtitle.toLowerCase().includes(q)),
-    [q]
-  );
-  const filteredComm = useMemo(
-    () => businessCommTemplates.filter((t) => t.title.toLowerCase().includes(q) || t.subtitle.toLowerCase().includes(q)),
-    [q]
-  );
-  const filteredReports = useMemo(
-    () => reportTemplates.filter((t) => t.title.toLowerCase().includes(q) || t.subtitle.toLowerCase().includes(q)),
-    [q]
-  );
+  // Apply global filters
+  const applyFilters = <T extends { title: string; subtitle: string; department: TemplateDepartment; category: TemplateCategory; price: TemplatePrice }>(items: T[]) => {
+    return items.filter((t) => {
+      if (q && !t.title.toLowerCase().includes(q) && !t.subtitle.toLowerCase().includes(q)) return false;
+      if (deptFilter !== "all" && t.department !== deptFilter) return false;
+      if (catFilter !== "all" && t.category !== catFilter) return false;
+      if (priceFilter !== "all" && t.price !== priceFilter) return false;
+      return true;
+    });
+  };
+
+  const filteredAI = useMemo(() => applyFilters(aiPromptTemplates), [q, deptFilter, catFilter, priceFilter]);
+  const filteredComm = useMemo(() => applyFilters(businessCommTemplates), [q, deptFilter, catFilter, priceFilter]);
+  const filteredReports = useMemo(() => applyFilters(reportTemplates), [q, deptFilter, catFilter, priceFilter]);
+
+  const totalFiltered = filteredAI.length + filteredComm.length + filteredReports.length;
 
   const stats = getTemplateStats();
   const featured = getFeaturedTemplates();
+
+  const resetFilters = () => {
+    setSearch("");
+    setDeptFilter("all");
+    setCatFilter("all");
+    setPriceFilter("all");
+    setAiPage(1);
+    setCommPage(1);
+    setReportPage(1);
+  };
+
+  const resetPages = () => {
+    setAiPage(1);
+    setCommPage(1);
+    setReportPage(1);
+  };
+
+  const hasActiveFilters = search !== "" || deptFilter !== "all" || catFilter !== "all" || priceFilter !== "all";
 
   // Paginate helper
   const paginate = <T,>(items: T[], page: number) => {
@@ -203,20 +266,65 @@ export default function Templates() {
         </div>
       </div>
 
-      {/* Search */}
-      <div className="relative max-w-sm">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Search templates…"
-          className="pl-9"
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setAiPage(1);
-            setCommPage(1);
-            setReportPage(1);
-          }}
-        />
+      {/* ── Canva-style Filter Bar ── */}
+      <div className="bg-muted/40 rounded-xl p-4 space-y-3 border">
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Search */}
+          <div className="relative flex-1 min-w-[200px] max-w-sm">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search templates…"
+              className="pl-9 bg-background"
+              value={search}
+              onChange={(e) => { setSearch(e.target.value); resetPages(); }}
+            />
+          </div>
+
+          {/* Department Filter */}
+          <Select value={deptFilter} onValueChange={(v) => { setDeptFilter(v); resetPages(); }}>
+            <SelectTrigger className="w-[160px] bg-background">
+              <SelectValue placeholder="Department" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Departments</SelectItem>
+              {departments.map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}
+            </SelectContent>
+          </Select>
+
+          {/* Category Filter */}
+          <Select value={catFilter} onValueChange={(v) => { setCatFilter(v); resetPages(); }}>
+            <SelectTrigger className="w-[180px] bg-background">
+              <SelectValue placeholder="Category" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Categories</SelectItem>
+              {categories.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+            </SelectContent>
+          </Select>
+
+          {/* Price Filter */}
+          <Select value={priceFilter} onValueChange={(v) => { setPriceFilter(v); resetPages(); }}>
+            <SelectTrigger className="w-[140px] bg-background">
+              <SelectValue placeholder="Price" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Prices</SelectItem>
+              {prices.map((p) => <SelectItem key={p} value={p}>{p}</SelectItem>)}
+            </SelectContent>
+          </Select>
+
+          {/* Clear Filters */}
+          {hasActiveFilters && (
+            <Button variant="ghost" size="sm" onClick={resetFilters} className="text-xs text-muted-foreground">
+              Clear
+            </Button>
+          )}
+        </div>
+
+        {/* Result count */}
+        <p className="text-xs text-muted-foreground font-medium">
+          {totalFiltered} template{totalFiltered !== 1 ? "s" : ""} found
+        </p>
       </div>
 
       {/* Tabs */}
@@ -224,12 +332,15 @@ export default function Templates() {
         <TabsList className="h-11">
          <TabsTrigger value="ai-prompts" className="gap-1.5 text-sm">
             <Sparkles className="h-4 w-4" /> AI Prompts
+            {filteredAI.length > 0 && <Badge variant="secondary" className="text-[10px] px-1.5 py-0 ml-1">{filteredAI.length}</Badge>}
           </TabsTrigger>
           <TabsTrigger value="business-comm" className="gap-1.5 text-sm">
             <FileText className="h-4 w-4" /> Business Communication
+            {filteredComm.length > 0 && <Badge variant="secondary" className="text-[10px] px-1.5 py-0 ml-1">{filteredComm.length}</Badge>}
           </TabsTrigger>
           <TabsTrigger value="reports" className="gap-1.5 text-sm">
             <FileSpreadsheet className="h-4 w-4" /> Report Templates
+            {filteredReports.length > 0 && <Badge variant="secondary" className="text-[10px] px-1.5 py-0 ml-1">{filteredReports.length}</Badge>}
           </TabsTrigger>
         </TabsList>
 
@@ -273,6 +384,7 @@ export default function Templates() {
                       format={t.format}
                       department={t.department}
                       price={t.price}
+                      icon={t.icon}
                       actionLabel="Use This Template"
                       actionIcon={<Sparkles className="h-3 w-3" />}
                       onAction={() => setSelectedAI(t)}
@@ -290,7 +402,7 @@ export default function Templates() {
               </>
             );
           })()}
-          {filteredAI.length === 0 && <EmptyState />}
+          {filteredAI.length === 0 && <EmptyState onClear={hasActiveFilters ? resetFilters : undefined} />}
         </TabsContent>
 
         {/* ── TAB 2: Business Communication ── */}
@@ -299,40 +411,29 @@ export default function Templates() {
             const { paged, totalPages } = paginate(filteredComm, commPage);
             return (
               <>
-                {commSections.map((section) => {
-                  const items = paged.filter((t) => t.section === section.key);
-                  if (items.length === 0) return null;
-                  return (
-                    <div key={section.key}>
-                      <h2 className="text-base font-bold flex items-center gap-2 mb-4">
-                        <FileText className="h-5 w-5" style={{ color: categoryColors.comm.bg }} />
-                        {section.label}
-                      </h2>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                        {items.map((t) => (
-                          <TemplateCard
-                            key={t.id}
-                            title={t.title}
-                            subtitle={t.subtitle}
-                            downloads={t.downloads}
-                            format={t.format}
-                            department={t.department}
-                            price={t.price}
-                            actionLabel="Use This Template"
-                            actionIcon={<FileText className="h-3 w-3" />}
-                            onAction={t.price === "Premium" ? undefined : () => setSelectedComm(t)}
-                            accentColor={categoryColors.comm}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  );
-                })}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {paged.map((t) => (
+                    <TemplateCard
+                      key={t.id}
+                      title={t.title}
+                      subtitle={t.subtitle}
+                      downloads={t.downloads}
+                      format={t.format}
+                      department={t.department}
+                      price={t.price}
+                      icon={t.icon}
+                      actionLabel="Use This Template"
+                      actionIcon={<FileText className="h-3 w-3" />}
+                      onAction={t.price === "Premium" ? undefined : () => setSelectedComm(t)}
+                      accentColor={categoryColors.comm}
+                    />
+                  ))}
+                </div>
                 <PaginationControls page={commPage} totalPages={totalPages} setPage={setCommPage} />
               </>
             );
           })()}
-          {filteredComm.length === 0 && <EmptyState />}
+          {filteredComm.length === 0 && <EmptyState onClear={hasActiveFilters ? resetFilters : undefined} />}
         </TabsContent>
 
         {/* ── TAB 3: Report Templates ── */}
@@ -341,44 +442,33 @@ export default function Templates() {
             const { paged, totalPages } = paginate(filteredReports, reportPage);
             return (
               <>
-                {reportSections.map((section) => {
-                  const items = paged.filter((t) => t.section === section.key);
-                  if (items.length === 0) return null;
-                  return (
-                    <div key={section.key}>
-                      <h2 className="text-base font-bold flex items-center gap-2 mb-4">
-                        <span>{section.icon}</span>
-                        {section.label}
-                      </h2>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                        {items.map((t) => (
-                          <TemplateCard
-                            key={t.id}
-                            title={t.title}
-                            subtitle={t.subtitle}
-                            downloads={t.downloads}
-                            premium={t.premium}
-                            isNew={t.isNew}
-                            format={t.format}
-                            department={t.department}
-                            price={t.price}
-                            actionLabel="Use This Template"
-                            actionIcon={t.section === "dynamic" ? <Eye className="h-3 w-3" /> : <Download className="h-3 w-3" />}
-                            onAction={t.price === "Premium" ? undefined : () => t.section === "dynamic" ? setPreviewReport(t) : setSelectedReport(t)}
-                            showPreview={t.section === "dynamic" && t.price !== "Premium"}
-                            onPreview={t.price === "Premium" ? undefined : () => setPreviewReport(t)}
-                            accentColor={categoryColors.report}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  );
-                })}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {paged.map((t) => (
+                    <TemplateCard
+                      key={t.id}
+                      title={t.title}
+                      subtitle={t.subtitle}
+                      downloads={t.downloads}
+                      premium={t.premium}
+                      isNew={t.isNew}
+                      format={t.format}
+                      department={t.department}
+                      price={t.price}
+                      icon={t.icon}
+                      actionLabel="Use This Template"
+                      actionIcon={t.section === "dynamic" ? <Eye className="h-3 w-3" /> : <Download className="h-3 w-3" />}
+                      onAction={t.price === "Premium" ? undefined : () => t.section === "dynamic" ? setPreviewReport(t) : setSelectedReport(t)}
+                      showPreview={t.section === "dynamic" && t.price !== "Premium"}
+                      onPreview={t.price === "Premium" ? undefined : () => setPreviewReport(t)}
+                      accentColor={categoryColors.report}
+                    />
+                  ))}
+                </div>
                 <PaginationControls page={reportPage} totalPages={totalPages} setPage={setReportPage} />
               </>
             );
           })()}
-          {filteredReports.length === 0 && <EmptyState />}
+          {filteredReports.length === 0 && <EmptyState onClear={hasActiveFilters ? resetFilters : undefined} />}
         </TabsContent>
       </Tabs>
 
@@ -401,6 +491,7 @@ function TemplateCard({
   format,
   department,
   price,
+  icon,
   actionLabel,
   actionIcon,
   onAction,
@@ -419,6 +510,7 @@ function TemplateCard({
   format?: TemplateFormat;
   department?: string;
   price?: TemplatePrice;
+  icon?: string;
   actionLabel: string;
   actionIcon: React.ReactNode;
   onAction?: () => void;
@@ -432,17 +524,47 @@ function TemplateCard({
   const accent = accentColor || { bg: "hsl(var(--primary))", bgLight: "hsl(var(--accent))", border: "hsl(var(--primary))", text: "hsl(var(--primary))" };
   const isPremium = price === "Premium";
 
+  // Get the specific icon component
+  const IconComponent = icon ? (iconMap[icon] || FileSpreadsheet) : FileSpreadsheet;
+  const pattern = icon ? (thumbnailPatterns[icon] || { bg: accent.bgLight, accent: accent.bg }) : { bg: accent.bgLight, accent: accent.bg };
+
   return (
     <Card
-      className={`hover:shadow-md transition-all shadow-sm min-h-[220px] ${isPremium ? "border-amber-300/60 bg-amber-50/30 dark:bg-amber-950/10" : ""}`}
+      className={`hover:shadow-md transition-all shadow-sm h-[280px] flex flex-col ${isPremium ? "border-amber-300/60 bg-amber-50/30 dark:bg-amber-950/10" : ""}`}
       style={{ borderColor: isPremium ? undefined : "transparent" }}
       onMouseEnter={(e) => !isPremium && (e.currentTarget.style.borderColor = accent.border + "66")}
       onMouseLeave={(e) => !isPremium && (e.currentTarget.style.borderColor = "transparent")}
     >
-      <CardContent className="p-0">
-        {/* Preview Thumbnail */}
-        <div className="h-24 rounded-t-lg flex items-center justify-center relative" style={{ backgroundColor: isPremium ? "hsl(45, 100%, 96%)" : accent.bgLight }}>
-          <FileSpreadsheet className="h-8 w-8" style={{ color: isPremium ? "hsl(45, 100%, 50%)" : accent.bg + "44" }} />
+      <CardContent className="p-0 flex flex-col flex-1">
+        {/* Unique Thumbnail */}
+        <div
+          className="h-28 rounded-t-lg flex items-center justify-center relative overflow-hidden"
+          style={{ backgroundColor: isPremium ? "hsl(45, 100%, 96%)" : pattern.bg }}
+        >
+          {/* Decorative elements */}
+          <div className="absolute top-2 left-3 w-8 h-1 rounded-full opacity-30" style={{ backgroundColor: isPremium ? "hsl(45, 100%, 50%)" : pattern.accent }} />
+          <div className="absolute top-5 left-3 w-12 h-1 rounded-full opacity-20" style={{ backgroundColor: isPremium ? "hsl(45, 100%, 50%)" : pattern.accent }} />
+          <div className="absolute bottom-3 right-3 w-6 h-6 rounded-full opacity-10" style={{ backgroundColor: isPremium ? "hsl(45, 100%, 50%)" : pattern.accent }} />
+          <div className="absolute top-3 right-10 w-4 h-4 rounded opacity-15" style={{ backgroundColor: isPremium ? "hsl(45, 100%, 50%)" : pattern.accent }} />
+
+          <div className="flex flex-col items-center gap-1 z-10">
+            <IconComponent
+              className="h-8 w-8"
+              style={{ color: isPremium ? "hsl(45, 100%, 50%)" : pattern.accent }}
+            />
+            {format && (
+              <span
+                className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded"
+                style={{
+                  backgroundColor: isPremium ? "hsl(45, 80%, 90%)" : pattern.accent + "18",
+                  color: isPremium ? "hsl(45, 100%, 40%)" : pattern.accent,
+                }}
+              >
+                {formatLabels[format]}
+              </span>
+            )}
+          </div>
+
           {isPremium && (
             <Badge className="absolute top-2 right-2 bg-amber-500 text-white gap-1 border-0">
               <Beef className="h-3 w-3" />Premium
@@ -457,17 +579,13 @@ function TemplateCard({
             </div>
           )}
         </div>
-        <div className="p-4 space-y-2">
-          <p className="font-semibold text-sm leading-tight">{title}</p>
+
+        <div className="p-4 space-y-2 flex-1 flex flex-col">
+          <p className="font-semibold text-sm leading-tight line-clamp-1">{title}</p>
           <p className="text-xs text-muted-foreground line-clamp-2">{subtitle}</p>
 
           {/* Meta badges */}
           <div className="flex flex-wrap gap-1.5">
-            {format && (
-              <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${formatBadgeColors[format]}`}>
-                {formatLabels[format]}
-              </Badge>
-            )}
             {department && (
               <Badge variant="outline" className="text-[10px] px-1.5 py-0">
                 {department}
@@ -488,56 +606,61 @@ function TemplateCard({
           <p className="text-xs text-muted-foreground">{downloads} downloads</p>
 
           {/* Actions */}
-          {isPremium ? (
-            <div className="pt-1">
+          <div className="mt-auto">
+            {isPremium ? (
               <p className="text-xs text-amber-600 font-semibold flex items-center gap-1">
                 <Beef className="h-3 w-3" />
                 Contact your BuLLMind representative to access this template.
               </p>
-            </div>
-          ) : (
-            <div className="flex gap-2 pt-1">
-              <Button
-                size="sm"
-                className="text-xs gap-1 flex-1 text-white"
-                style={{ backgroundColor: accent.bg }}
-                onClick={onAction}
-              >
-                {actionIcon}
-                {actionLabel}
-              </Button>
-              {onCopy && (
-                <Button variant="ghost" size="sm" className="text-xs gap-1" onClick={onCopy}>
-                  <Copy className="h-3 w-3" />
+            ) : (
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  className="text-xs gap-1 flex-1 text-white"
+                  style={{ backgroundColor: accent.bg }}
+                  onClick={onAction}
+                >
+                  {actionIcon}
+                  {actionLabel}
                 </Button>
-              )}
-              {onOpenInAI && (
-                <Button variant="ghost" size="sm" className="text-xs gap-1" onClick={onOpenInAI} title="Open in AI Insights">
-                  <Brain className="h-3 w-3" />
-                </Button>
-              )}
-              {showPreview && onPreview ? (
-                <Button variant="ghost" size="sm" className="text-xs gap-1" onClick={onPreview}>
-                  <Eye className="h-3 w-3" />
-                </Button>
-              ) : onEye ? (
-                <Button variant="ghost" size="sm" className="text-xs gap-1" onClick={onEye}>
-                  <Eye className="h-3 w-3" />
-                </Button>
-              ) : null}
-            </div>
-          )}
+                {onCopy && (
+                  <Button variant="ghost" size="sm" className="text-xs gap-1" onClick={onCopy}>
+                    <Copy className="h-3 w-3" />
+                  </Button>
+                )}
+                {onOpenInAI && (
+                  <Button variant="ghost" size="sm" className="text-xs gap-1" onClick={onOpenInAI} title="Open in AI Insights">
+                    <Brain className="h-3 w-3" />
+                  </Button>
+                )}
+                {showPreview && onPreview ? (
+                  <Button variant="ghost" size="sm" className="text-xs gap-1" onClick={onPreview}>
+                    <Eye className="h-3 w-3" />
+                  </Button>
+                ) : onEye ? (
+                  <Button variant="ghost" size="sm" className="text-xs gap-1" onClick={onEye}>
+                    <Eye className="h-3 w-3" />
+                  </Button>
+                ) : null}
+              </div>
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>
   );
 }
 
-function EmptyState() {
+function EmptyState({ onClear }: { onClear?: () => void }) {
   return (
     <div className="text-center py-12 text-muted-foreground">
       <Search className="h-10 w-10 mx-auto mb-3 opacity-30" />
-      <p className="text-sm">No templates match your search.</p>
+      <p className="text-sm">No templates match your filters.</p>
+      {onClear && (
+        <Button variant="link" size="sm" onClick={onClear} className="mt-2 text-xs">
+          Clear all filters
+        </Button>
+      )}
     </div>
   );
 }
