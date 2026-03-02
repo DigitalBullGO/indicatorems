@@ -273,7 +273,7 @@ export default function Templates() {
                       format={t.format}
                       department={t.department}
                       price={t.price}
-                      actionLabel="Use Template"
+                      actionLabel="Use This Template"
                       actionIcon={<Sparkles className="h-3 w-3" />}
                       onAction={() => setSelectedAI(t)}
                       onCopy={() => {
@@ -318,7 +318,7 @@ export default function Templates() {
                             format={t.format}
                             department={t.department}
                             price={t.price}
-                            actionLabel="Open Template"
+                            actionLabel="Use This Template"
                             actionIcon={<FileText className="h-3 w-3" />}
                             onAction={t.price === "Premium" ? undefined : () => setSelectedComm(t)}
                             accentColor={categoryColors.comm}
