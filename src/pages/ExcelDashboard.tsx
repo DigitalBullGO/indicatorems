@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +14,7 @@ import {
   CheckCircle2, ArrowRight, ArrowLeft, Lock, Brain, Wand2, RefreshCw,
   TrendingUp, AlertTriangle, DollarSign,
 } from "lucide-react";
+import { useUploadLimit } from "@/hooks/useUploadLimit";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, LineChart, Line,
@@ -103,11 +104,25 @@ const steps = [
 export default function ExcelDashboard() {
   const [activeStep, setActiveStep] = useState(0);
   const [uploaded, setUploaded] = useState(false);
+  const [uploadedFileName, setUploadedFileName] = useState("");
   const [stepsCompleted, setStepsCompleted] = useState({ 0: false, 1: false, 2: false, 3: false });
   const [columnMap, setColumnMap] = useState<Record<string, string>>({});
   const [purpose, setPurpose] = useState("deep-analysis");
   const [selectedLLM, setSelectedLLM] = useState("claude");
   const [analysisRun, setAnalysisRun] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { remaining, canUpload, recordUpload } = useUploadLimit();
+
+  const handleFileUpload = (file: File) => {
+    if (!canUpload) {
+      toast.error("Daily upload limit reached. Try again tomorrow.");
+      return;
+    }
+    recordUpload();
+    setUploadedFileName(file.name);
+    setUploaded(true);
+    toast.success(`File "${file.name}" uploaded successfully.`);
+  };
 
   const canGoTo = (step: number) => {
     if (step === 0) return true;
@@ -172,7 +187,16 @@ export default function ExcelDashboard() {
   const StepIntake = () => (
     <div className="space-y-6">
       {!uploaded ? (
-        <Card className="border-dashed border-2 border-primary/30 gradient-card-warm card-premium">
+        <Card
+          className={`border-dashed border-2 gradient-card-warm card-premium ${canUpload ? "border-primary/30" : "border-muted opacity-60"}`}
+          onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+          onDrop={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const file = e.dataTransfer.files?.[0];
+            if (file) handleFileUpload(file);
+          }}
+        >
           <CardContent className="py-20 flex flex-col items-center gap-5">
             <div className="h-20 w-20 rounded-2xl bg-primary/10 flex items-center justify-center">
               <Upload className="h-10 w-10 text-primary" />
@@ -181,9 +205,28 @@ export default function ExcelDashboard() {
               <p className="font-bold text-lg text-foreground">Drop your Excel or CSV file here</p>
               <p className="text-sm font-semibold text-muted-foreground mt-1">Supports .xlsx, .xls, .csv up to 50MB</p>
             </div>
-            <Button onClick={() => setUploaded(true)} className="gap-2 btn-glow px-6 h-11 text-sm font-bold">
-              <FileSpreadsheet className="h-4 w-4" /> Upload Sample Data
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".xlsx,.xls,.csv"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleFileUpload(file);
+              }}
+            />
+            <Button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={!canUpload}
+              className="gap-2 btn-glow px-6 h-11 text-sm font-bold"
+            >
+              <FileSpreadsheet className="h-4 w-4" /> Upload File
             </Button>
+            <p className={`text-xs font-semibold ${remaining <= 3 ? "text-destructive" : "text-muted-foreground"}`}>
+              {canUpload
+                ? `${remaining} upload${remaining !== 1 ? "s" : ""} remaining today`
+                : "Daily upload limit reached. Try again tomorrow."}
+            </p>
           </CardContent>
         </Card>
       ) : (
@@ -191,7 +234,7 @@ export default function ExcelDashboard() {
           {/* File Metadata */}
           <div className="flex items-center gap-3 flex-wrap">
             <Badge variant="outline" className="gap-1.5 px-3 py-1">
-              <FileSpreadsheet className="h-3.5 w-3.5" /> sample_bom_data.xlsx
+              <FileSpreadsheet className="h-3.5 w-3.5" /> {uploadedFileName || "sample_bom_data.xlsx"}
             </Badge>
             <Badge className="bg-primary/10 text-primary hover:bg-primary/20 font-bold">
               8 rows × 6 columns

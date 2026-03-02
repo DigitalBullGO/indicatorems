@@ -1,3 +1,9 @@
+// ─── SHARED TYPES ───
+export type TemplateFormat = "excel" | "doc" | "pdf" | "text";
+export type TemplateDepartment = "Purchasing" | "Production" | "Sales" | "Quality" | "Finance";
+export type TemplateCategory = "Reports" | "Prompts" | "Business Communication";
+export type TemplatePrice = "Included" | "Premium";
+
 // ─── AI PROMPT TEMPLATES ───
 export interface AIPromptTemplate {
   id: string;
@@ -6,6 +12,11 @@ export interface AIPromptTemplate {
   prompt: string;
   downloads: number;
   section: "sourcing" | "quality" | "production";
+  format: TemplateFormat;
+  department: TemplateDepartment;
+  category: TemplateCategory;
+  price: TemplatePrice;
+  icon: string;
 }
 
 export const aiPromptTemplates: AIPromptTemplate[] = [
@@ -15,6 +26,11 @@ export const aiPromptTemplates: AIPromptTemplate[] = [
     subtitle: "Evaluate and rank suppliers for a component based on OTD, IQC pass rate, lead time and cost data",
     downloads: 0,
     section: "sourcing",
+    format: "text",
+    department: "Purchasing",
+    category: "Prompts",
+    price: "Included",
+    icon: "ShoppingCart",
     prompt: `You are a procurement analyst for an EMS company. Based on the supplier data provided below, evaluate and rank the suppliers for [Component Name]. Score each supplier on: OTD % (weight 40%), IQC Pass Rate % (weight 40%), Lead Time vs Committed (weight 20%). Provide a ranked list with scores, key strengths, weaknesses, and a final recommendation. Data: [Paste supplier data here]`,
   },
   {
@@ -23,6 +39,11 @@ export const aiPromptTemplates: AIPromptTemplate[] = [
     subtitle: "Find approved alternates for a shortage part number with sourcing justification and risk assessment",
     downloads: 0,
     section: "sourcing",
+    format: "text",
+    department: "Purchasing",
+    category: "Prompts",
+    price: "Included",
+    icon: "Search",
     prompt: `You are a sourcing engineer for an EMS manufacturer. The following part is currently in shortage: Part Number: [XXX], Description: [XXX], Current Supplier: [XXX], Monthly Requirement: [XXX] units. Suggest 3 alternate approved sources with: supplier name, part cross-reference, lead time, risk level, and qualification steps needed.`,
   },
   {
@@ -31,6 +52,11 @@ export const aiPromptTemplates: AIPromptTemplate[] = [
     subtitle: "Analyse procurement spend data and identify top savings and consolidation opportunities by commodity",
     downloads: 0,
     section: "sourcing",
+    format: "text",
+    department: "Purchasing",
+    category: "Prompts",
+    price: "Included",
+    icon: "DollarSign",
     prompt: `You are a procurement manager. Analyse the spend data below and identify: 1) Top 3 commodities where consolidation will yield savings, 2) Suppliers with overlapping scope that can be merged, 3) Estimated savings % from each consolidation action. Data: [Paste spend data here]`,
   },
   {
@@ -39,6 +65,11 @@ export const aiPromptTemplates: AIPromptTemplate[] = [
     subtitle: "Flag open POs at risk of delay based on supplier history, lead times and current shortages",
     downloads: 0,
     section: "sourcing",
+    format: "text",
+    department: "Purchasing",
+    category: "Prompts",
+    price: "Included",
+    icon: "AlertTriangle",
     prompt: `Review the open PO data below and flag any POs at risk of delay. For each at-risk PO provide: PO number, supplier, part, reason for risk, recommended action, and escalation priority (High/Medium/Low). Data: [Paste open PO data here]`,
   },
   {
@@ -47,6 +78,11 @@ export const aiPromptTemplates: AIPromptTemplate[] = [
     subtitle: "Generate a structured negotiation brief for supplier contract renewal using scorecard and spend data",
     downloads: 0,
     section: "sourcing",
+    format: "text",
+    department: "Purchasing",
+    category: "Prompts",
+    price: "Premium",
+    icon: "Handshake",
     prompt: `Prepare a negotiation brief for the upcoming contract renewal with [Supplier Name]. Use the scorecard data below. Include: current performance summary, areas for improvement, our negotiation objectives, suggested price targets, and opening/walk-away positions. Data: [Paste supplier scorecard data here]`,
   },
   {
@@ -55,6 +91,11 @@ export const aiPromptTemplates: AIPromptTemplate[] = [
     subtitle: "Compare quoted component prices against market benchmarks and suggest negotiation targets",
     downloads: 0,
     section: "sourcing",
+    format: "text",
+    department: "Purchasing",
+    category: "Prompts",
+    price: "Premium",
+    icon: "TrendingUp",
     prompt: `Compare the quoted prices below against typical market rates for these component categories. For each line item identify if the quote is Above Market / At Market / Below Market and suggest a target negotiation price. Data: [Paste quote comparison data here]`,
   },
   {
@@ -63,6 +104,11 @@ export const aiPromptTemplates: AIPromptTemplate[] = [
     subtitle: "Analyse DPPM trend data by customer and identify root causes with recommended 8D corrective actions",
     downloads: 0,
     section: "quality",
+    format: "text",
+    department: "Quality",
+    category: "Prompts",
+    price: "Included",
+    icon: "Microscope",
     prompt: `You are a quality engineer at an EMS company. Analyse the DPPM trend data below by customer and product. Identify: 1) Top 3 defect categories driving DPPM, 2) Likely root causes for each, 3) Recommended 8D actions with owner and timeline. Data: [Paste DPPM data here]`,
   },
   {
@@ -71,6 +117,11 @@ export const aiPromptTemplates: AIPromptTemplate[] = [
     subtitle: "Auto-draft a structured 8D problem solving response from defect description and production data",
     downloads: 0,
     section: "quality",
+    format: "text",
+    department: "Quality",
+    category: "Prompts",
+    price: "Included",
+    icon: "FileWarning",
     prompt: `Draft a formal 8D problem solving report for the following customer complaint. Customer: [XXX], Product: [XXX], Defect Description: [XXX], Quantity Affected: [XXX]. Complete all 8 disciplines with containment actions, root cause, corrective actions, and preventive actions.`,
   },
   {
@@ -79,6 +130,11 @@ export const aiPromptTemplates: AIPromptTemplate[] = [
     subtitle: "Summarise ISO/IATF 16949 audit findings and prioritise closure actions by risk level",
     downloads: 0,
     section: "quality",
+    format: "text",
+    department: "Quality",
+    category: "Prompts",
+    price: "Included",
+    icon: "ClipboardCheck",
     prompt: `Summarise the following ISO/IATF 16949 audit observations. For each finding provide: finding number, clause reference, severity (Major/Minor/OFI), current status, recommended closure action, and target date. Prioritise by risk level. Data: [Paste audit findings here]`,
   },
   {
@@ -87,6 +143,11 @@ export const aiPromptTemplates: AIPromptTemplate[] = [
     subtitle: "Analyse daily production data and suggest corrective actions",
     downloads: 0,
     section: "production",
+    format: "text",
+    department: "Production",
+    category: "Prompts",
+    price: "Included",
+    icon: "Factory",
     prompt: `Analyse the production data below for [Date] and explain the variance from target. Identify: 1) Which lines or shifts underperformed, 2) Root cause of deviation, 3) Immediate corrective actions required today, 4) Escalation needed Y/N. Data: [Paste production data here]`,
   },
   {
@@ -95,6 +156,11 @@ export const aiPromptTemplates: AIPromptTemplate[] = [
     subtitle: "Suggest improvement actions based on OEE breakdown",
     downloads: 0,
     section: "production",
+    format: "text",
+    department: "Production",
+    category: "Prompts",
+    price: "Included",
+    icon: "Gauge",
     prompt: `Based on the OEE breakdown data below by production line, identify the top 3 improvement opportunities. For each, provide: current OEE loss %, root cause category (Availability/Performance/Quality), specific action, expected OEE gain %, and implementation timeline. Data: [Paste OEE data here]`,
   },
 ];
@@ -108,6 +174,11 @@ export interface BusinessCommTemplate {
   fields: { label: string; key: string; placeholder: string; type?: "text" | "textarea" | "date" }[];
   bodyTemplate: string;
   downloads: number;
+  format: TemplateFormat;
+  department: TemplateDepartment;
+  category: TemplateCategory;
+  price: TemplatePrice;
+  icon: string;
 }
 
 export const businessCommTemplates: BusinessCommTemplate[] = [
@@ -116,7 +187,12 @@ export const businessCommTemplates: BusinessCommTemplate[] = [
     title: "Vendor Onboarding Letter",
     subtitle: "Welcome letter for newly approved vendors with compliance requirements",
     section: "vendor",
-    downloads: 234,
+    downloads: 78,
+    format: "doc",
+    department: "Purchasing",
+    category: "Business Communication",
+    price: "Included",
+    icon: "UserPlus",
     fields: [
       { label: "Vendor Name", key: "vendorName", placeholder: "Enter vendor company name" },
       { label: "Contact Person", key: "contactPerson", placeholder: "Enter contact person name" },
@@ -131,7 +207,12 @@ export const businessCommTemplates: BusinessCommTemplate[] = [
     title: "Purchase Order Confirmation",
     subtitle: "Formal PO confirmation with terms, delivery schedule, and quality requirements",
     section: "vendor",
-    downloads: 189,
+    downloads: 63,
+    format: "doc",
+    department: "Purchasing",
+    category: "Business Communication",
+    price: "Included",
+    icon: "ClipboardList",
     fields: [
       { label: "Supplier Name", key: "supplierName", placeholder: "Enter supplier name" },
       { label: "PO Number", key: "poNumber", placeholder: "PO-XXXX" },
@@ -145,7 +226,12 @@ export const businessCommTemplates: BusinessCommTemplate[] = [
     title: "Supplier Performance Warning",
     subtitle: "Formal warning letter for suppliers with declining quality or delivery metrics",
     section: "vendor",
-    downloads: 98,
+    downloads: 33,
+    format: "doc",
+    department: "Purchasing",
+    category: "Business Communication",
+    price: "Included",
+    icon: "AlertTriangle",
     fields: [
       { label: "Supplier Name", key: "supplierName", placeholder: "Supplier company name" },
       { label: "Issue Description", key: "issueDescription", placeholder: "Describe performance issues", type: "textarea" },
@@ -159,7 +245,12 @@ export const businessCommTemplates: BusinessCommTemplate[] = [
     title: "Customer Quotation Cover Letter",
     subtitle: "Professional cover letter to accompany customer quotations with validity and terms",
     section: "customer",
-    downloads: 312,
+    downloads: 104,
+    format: "doc",
+    department: "Sales",
+    category: "Business Communication",
+    price: "Included",
+    icon: "FileText",
     fields: [
       { label: "Customer Name", key: "customerName", placeholder: "Customer company name" },
       { label: "Contact Person", key: "contactPerson", placeholder: "Customer contact name" },
@@ -174,7 +265,12 @@ export const businessCommTemplates: BusinessCommTemplate[] = [
     title: "Delivery Delay Notification",
     subtitle: "Proactive customer notification about shipment delays with revised timeline",
     section: "customer",
-    downloads: 156,
+    downloads: 52,
+    format: "doc",
+    department: "Sales",
+    category: "Business Communication",
+    price: "Included",
+    icon: "Clock",
     fields: [
       { label: "Customer Name", key: "customerName", placeholder: "Customer name" },
       { label: "Order Number", key: "orderNumber", placeholder: "SO-XXXX" },
@@ -189,7 +285,12 @@ export const businessCommTemplates: BusinessCommTemplate[] = [
     title: "Quality Improvement Report",
     subtitle: "Formal quality improvement report for customer audits and compliance reviews",
     section: "customer",
-    downloads: 143,
+    downloads: 48,
+    format: "pdf",
+    department: "Quality",
+    category: "Business Communication",
+    price: "Premium",
+    icon: "Award",
     fields: [
       { label: "Customer Name", key: "customerName", placeholder: "Customer name" },
       { label: "Report Period", key: "reportPeriod", placeholder: "e.g., Q1 2026" },
@@ -203,7 +304,12 @@ export const businessCommTemplates: BusinessCommTemplate[] = [
     title: "Internal Audit Notice",
     subtitle: "Internal memo for upcoming quality or process audit notification",
     section: "internal",
-    downloads: 167,
+    downloads: 56,
+    format: "doc",
+    department: "Quality",
+    category: "Business Communication",
+    price: "Included",
+    icon: "Search",
     fields: [
       { label: "Department", key: "department", placeholder: "Department name" },
       { label: "Audit Date", key: "auditDate", placeholder: "Scheduled date", type: "date" },
@@ -217,7 +323,12 @@ export const businessCommTemplates: BusinessCommTemplate[] = [
     title: "Engineering Change Notice",
     subtitle: "Formal ECN document for product or process changes with impact assessment",
     section: "internal",
-    downloads: 205,
+    downloads: 68,
+    format: "doc",
+    department: "Production",
+    category: "Business Communication",
+    price: "Included",
+    icon: "Settings",
     fields: [
       { label: "ECN Number", key: "ecnNumber", placeholder: "ECN-XXXX" },
       { label: "Product / Part Number", key: "partNumber", placeholder: "Affected part number" },
@@ -232,7 +343,12 @@ export const businessCommTemplates: BusinessCommTemplate[] = [
     title: "Shift Handover Report",
     subtitle: "Standardised shift handover template for production continuity",
     section: "internal",
-    downloads: 278,
+    downloads: 93,
+    format: "doc",
+    department: "Production",
+    category: "Business Communication",
+    price: "Included",
+    icon: "RefreshCw",
     fields: [
       { label: "Shift", key: "shift", placeholder: "e.g., Day Shift / Night Shift" },
       { label: "Date", key: "date", placeholder: "Handover date", type: "date" },
@@ -247,7 +363,12 @@ export const businessCommTemplates: BusinessCommTemplate[] = [
     title: "Material Shortage Escalation",
     subtitle: "Internal escalation memo for critical material shortages impacting production",
     section: "internal",
-    downloads: 89,
+    downloads: 30,
+    format: "doc",
+    department: "Purchasing",
+    category: "Business Communication",
+    price: "Included",
+    icon: "AlertOctagon",
     fields: [
       { label: "Part Number", key: "partNumber", placeholder: "Shortage part number" },
       { label: "Required Quantity", key: "requiredQty", placeholder: "Units needed" },
@@ -261,7 +382,12 @@ export const businessCommTemplates: BusinessCommTemplate[] = [
     title: "Vendor Scorecard Summary",
     subtitle: "Quarterly vendor performance summary with ratings and action items",
     section: "vendor",
-    downloads: 167,
+    downloads: 56,
+    format: "pdf",
+    department: "Purchasing",
+    category: "Business Communication",
+    price: "Premium",
+    icon: "BarChart",
     fields: [
       { label: "Vendor Name", key: "vendorName", placeholder: "Vendor company name" },
       { label: "Review Period", key: "reviewPeriod", placeholder: "e.g., Q4 2025" },
@@ -281,22 +407,27 @@ export interface ReportTemplate {
   downloads: number;
   premium: boolean;
   isNew?: boolean;
+  format: TemplateFormat;
+  department: TemplateDepartment;
+  category: TemplateCategory;
+  price: TemplatePrice;
+  icon: string;
 }
 
 export const reportTemplates: ReportTemplate[] = [
-  { id: "rt-1", title: "Commodity Group Mapping", subtitle: "Map components to standard commodity groups for spend analysis", section: "inputs", downloads: 189, premium: false },
-  { id: "rt-2", title: "Standard BOM Input Sheet", subtitle: "Standardized BOM entry template with validation rules", section: "inputs", downloads: 312, premium: false },
-  { id: "rt-3", title: "Supplier Line Card", subtitle: "Supplier capability and product line documentation", section: "inputs", downloads: 98, premium: false },
-  { id: "rt-4", title: "Material Pricing Model", subtitle: "Structured material cost breakdown and pricing template", section: "inputs", downloads: 67, premium: true },
-  { id: "rt-5", title: "Surface Finish Calculator", subtitle: "Calculate surface finish costs based on specifications", section: "inputs", downloads: 45, premium: true },
-  { id: "rt-6", title: "Machine Hour Rate Sheet", subtitle: "Machine hour rate calculation with overhead allocation", section: "inputs", downloads: 89, premium: true },
-  { id: "rt-7", title: "Multi-level BOM Template", subtitle: "Multi-level bill of materials with parent-child hierarchy", section: "inputs", downloads: 278, premium: false },
-  { id: "rt-8", title: "Commodity Spend Tracker", subtitle: "Track and analyze spend by commodity category over time", section: "inputs", downloads: 205, premium: false },
-  { id: "rt-9", title: "Vendor Scorecard Template", subtitle: "Evaluate vendor performance across key metrics", section: "inputs", downloads: 167, premium: false },
-  { id: "rt-10", title: "Quote Comparison Matrix", subtitle: "Side-by-side quote comparison for sourcing decisions", section: "inputs", downloads: 143, premium: false },
-  { id: "rt-11", title: "Component Shortage & Risk Report", subtitle: "Identify components at risk of shortage with mitigation plans", section: "dynamic", downloads: 0, premium: false, isNew: true },
-  { id: "rt-12", title: "Supplier Scorecard Report", subtitle: "Dynamic supplier performance report with KPI calculations", section: "dynamic", downloads: 0, premium: false, isNew: true },
-  { id: "rt-13", title: "Spend by Commodity Report", subtitle: "Automated spend analysis by commodity with trend charts", section: "dynamic", downloads: 0, premium: false, isNew: true },
-  { id: "rt-14", title: "PO Aging & Open PO Tracker", subtitle: "Track open POs by aging buckets with escalation flags", section: "dynamic", downloads: 0, premium: false, isNew: true },
-  { id: "rt-15", title: "Inventory Turnover Report", subtitle: "Calculate inventory turnover ratios by commodity and location", section: "dynamic", downloads: 0, premium: false, isNew: true },
+  { id: "rt-1", title: "Commodity Group Mapping", subtitle: "Map components to standard commodity groups for spend analysis", section: "inputs", downloads: 63, premium: false, format: "excel", department: "Purchasing", category: "Reports", price: "Included", icon: "Grid" },
+  { id: "rt-2", title: "Standard BOM Input Sheet", subtitle: "Standardized BOM entry template with validation rules", section: "inputs", downloads: 104, premium: false, format: "excel", department: "Production", category: "Reports", price: "Included", icon: "Table" },
+  { id: "rt-3", title: "Supplier Line Card", subtitle: "Supplier capability and product line documentation", section: "inputs", downloads: 33, premium: false, format: "excel", department: "Purchasing", category: "Reports", price: "Included", icon: "CreditCard" },
+  { id: "rt-4", title: "Material Pricing Model", subtitle: "Structured material cost breakdown and pricing template", section: "inputs", downloads: 22, premium: true, format: "excel", department: "Finance", category: "Reports", price: "Premium", icon: "DollarSign" },
+  { id: "rt-5", title: "Surface Finish Calculator", subtitle: "Calculate surface finish costs based on specifications", section: "inputs", downloads: 15, premium: true, format: "excel", department: "Production", category: "Reports", price: "Premium", icon: "Calculator" },
+  { id: "rt-6", title: "Machine Hour Rate Sheet", subtitle: "Machine hour rate calculation with overhead allocation", section: "inputs", downloads: 30, premium: true, format: "excel", department: "Finance", category: "Reports", price: "Premium", icon: "Clock" },
+  { id: "rt-7", title: "Multi-level BOM Template", subtitle: "Multi-level bill of materials with parent-child hierarchy", section: "inputs", downloads: 93, premium: false, format: "excel", department: "Production", category: "Reports", price: "Included", icon: "GitBranch" },
+  { id: "rt-8", title: "Commodity Spend Tracker", subtitle: "Track and analyze spend by commodity category over time", section: "inputs", downloads: 68, premium: false, format: "excel", department: "Purchasing", category: "Reports", price: "Included", icon: "TrendingUp" },
+  { id: "rt-9", title: "Vendor Scorecard Template", subtitle: "Evaluate vendor performance across key metrics", section: "inputs", downloads: 56, premium: false, format: "excel", department: "Purchasing", category: "Reports", price: "Included", icon: "Award" },
+  { id: "rt-10", title: "Quote Comparison Matrix", subtitle: "Side-by-side quote comparison for sourcing decisions", section: "inputs", downloads: 48, premium: false, format: "excel", department: "Sales", category: "Reports", price: "Included", icon: "Columns" },
+  { id: "rt-11", title: "Component Shortage & Risk Report", subtitle: "Identify components at risk of shortage with mitigation plans", section: "dynamic", downloads: 0, premium: false, isNew: true, format: "pdf", department: "Purchasing", category: "Reports", price: "Included", icon: "AlertTriangle" },
+  { id: "rt-12", title: "Supplier Scorecard Report", subtitle: "Dynamic supplier performance report with KPI calculations", section: "dynamic", downloads: 0, premium: false, isNew: true, format: "pdf", department: "Purchasing", category: "Reports", price: "Included", icon: "BarChart" },
+  { id: "rt-13", title: "Spend by Commodity Report", subtitle: "Automated spend analysis by commodity with trend charts", section: "dynamic", downloads: 0, premium: false, isNew: true, format: "pdf", department: "Finance", category: "Reports", price: "Included", icon: "PieChart" },
+  { id: "rt-14", title: "PO Aging & Open PO Tracker", subtitle: "Track open POs by aging buckets with escalation flags", section: "dynamic", downloads: 0, premium: false, isNew: true, format: "pdf", department: "Purchasing", category: "Reports", price: "Included", icon: "Clock" },
+  { id: "rt-15", title: "Inventory Turnover Report", subtitle: "Calculate inventory turnover ratios by commodity and location", section: "dynamic", downloads: 0, premium: false, isNew: true, format: "pdf", department: "Production", category: "Reports", price: "Included", icon: "RefreshCw" },
 ];
