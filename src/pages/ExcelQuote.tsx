@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Progress } from "@/components/ui/progress";
-import { Upload, FileSpreadsheet, Send, CheckCircle2, ClipboardCheck, DollarSign, ArrowRight } from "lucide-react";
+import { Upload, FileSpreadsheet, Send, CheckCircle2, ClipboardCheck, DollarSign, ArrowRight, ExternalLink } from "lucide-react";
 import { sampleBOM } from "@/data/mockData";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
@@ -49,17 +49,26 @@ export default function ExcelQuote() {
         </CardContent>
       </Card>
 
-      {/* Step Content */}
-      {currentStep === 1 && (
-        <Card className="border-dashed border-2 border-primary/40">
-          <CardContent className="py-12 flex flex-col items-center gap-4">
-            <FileSpreadsheet className="h-12 w-12 text-primary" />
-            <p className="font-semibold">Upload BOM File</p>
-            <Button onClick={() => setCurrentStep(2)} className="gap-2"><Upload className="h-4 w-4" />Load Sample BOM</Button>
-          </CardContent>
-        </Card>
-      )}
+      {/* External Tool Link */}
+      <Card className="card-premium border-0 gradient-card-indigo">
+        <CardContent className="py-12 flex flex-col items-center gap-5">
+          <div className="h-16 w-16 rounded-2xl bg-indigo/10 flex items-center justify-center">
+            <ExternalLink className="h-8 w-8 text-indigo" />
+          </div>
+          <div className="text-center">
+            <p className="font-bold text-lg text-foreground">BOM to Quote — External Tool</p>
+            <p className="text-sm font-semibold text-muted-foreground mt-1 max-w-md">
+              This module connects to our dedicated quoting platform. Upload your BOM and generate RFQs, feasibility checks, costed BOMs, and final sales quotes.
+            </p>
+          </div>
+          <Button className="gap-2 btn-glow px-6 h-11 text-sm font-bold" onClick={() => setCurrentStep(2)}>
+            <ExternalLink className="h-4 w-4" /> Open Quoting Tool
+          </Button>
+          <p className="text-xs text-muted-foreground font-semibold">Powered by DigiBull Quoting Engine</p>
+        </CardContent>
+      </Card>
 
+      {/* Step Content */}
       {currentStep >= 2 && (
         <Card className="shadow-sm">
           <CardHeader className="pb-2"><CardTitle className="text-base text-indigo">BOM Data — {sampleBOM.length} line items</CardTitle></CardHeader>
@@ -81,7 +90,7 @@ export default function ExcelQuote() {
                     <TableCell className="font-medium">${(b.unitCost * b.qty).toFixed(2)}</TableCell>
                     <TableCell>{b.supplier}</TableCell>
                     <TableCell>
-                      <Badge variant={b.leadTime > 100 ? "destructive" : "outline"} className={b.leadTime > 100 ? "" : ""}>{b.leadTime}d</Badge>
+                      <Badge variant={b.leadTime > 100 ? "destructive" : "outline"}>{b.leadTime}d</Badge>
                     </TableCell>
                   </TableRow>
                 ))}

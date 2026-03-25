@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AppLayout from "@/components/layout/AppLayout";
 import Index from "./pages/Index";
+import ReportBuilder from "./pages/ReportBuilder";
 import ExcelSapHub from "./pages/ExcelSapHub";
 import AiInsights from "./pages/AiInsights";
 import DragDropBuilder from "./pages/DragDropBuilder";
@@ -24,6 +25,7 @@ const App = () => (
         <Routes>
           <Route element={<AppLayout />}>
             <Route path="/" element={<Index />} />
+            <Route path="/report-builder" element={<ReportBuilder />} />
             <Route path="/excel-sap" element={<ExcelSapHub />} />
             <Route path="/ai-insights" element={<AiInsights />} />
             <Route path="/drag-drop" element={<DragDropBuilder />} />
