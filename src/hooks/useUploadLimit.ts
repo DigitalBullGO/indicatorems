@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 
-const MAX_UPLOADS_PER_DAY = 10;
+const MAX_UPLOADS_PER_DAY = 20;
 
 function getTodayKey() {
   return `upload_count_${new Date().toISOString().slice(0, 10)}`;
