@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Progress } from "@/components/ui/progress";
-import { Upload, FileSpreadsheet, Send, CheckCircle2, ClipboardCheck, DollarSign, ArrowRight } from "lucide-react";
+import { Upload, FileSpreadsheet, Send, CheckCircle2, ClipboardCheck, DollarSign, ArrowRight, ExternalLink } from "lucide-react";
 import { sampleBOM } from "@/data/mockData";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
